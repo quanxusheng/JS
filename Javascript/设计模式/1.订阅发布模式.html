@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+ <div>
+  <h1>JAY专区</h1>
+  <div class="p-c play">></div>
+  <div class="p-c pause">||</div>
+  <span class="p-t"></span>
+  <div class="un-sub" data-index="1">取消订阅</div>
+  <div class="down">
+    <div class="left">
+      <p>正在播放：</p>
+      <div class="l-down"></div>
+    </div>
+    <div class="right">
+      <p>待播放歌单：</p>
+      <div class="r-down"></div>
+    </div>
+  </div>
+</div>
+</body>
+<script>
+    /* 
+      订阅 - 发布模式
+        包含了订阅，事件调度中心，发布三个角色
+        事件调度中心先订阅各种时机触发的事件和传递特殊的参数，
+        在事件触发的时候发布对应的事件及相关功能的处理
+        避免了订阅和发布之间的依赖性
+    */
+    class Player {
+      constructor() {
+        this.watcher = {}
+        this.playList = ['以父之名', '夜的第七章', '止战之殇', '梯田', '漂移']
+        this.curSong = ''
+        this._createRightEle()
+      }
+
+      // 订阅
+      _subscribe(e, cb) {
+        this.watcher[e] = this.watcher[e] || []
+        this.watcher[e].push(cb)
+      }
+
+      // 发布
+      _publish(e) {
+        if (this.watcher[e] && this.watcher[e].length) {
+          if(this.playList.length) {
+            this.watcher[e].forEach(cb => {
+              if (e === 'play') {
+                this.curSong = this.playList.shift()
+                this._createLeftEle()
+                this._createRightEle()
+              }
+              cb(this.curSong)
+            })
+          } else {
+            console.log('待播放列表为空')
+          }
+        }
+      }
+
+      // 取消订阅
+      _unSubscribe(e) {
+        console.log('=>ss', this.watcher)
+        this.watcher = {}
+      }
+
+      //
+      _createLeftEle() {
+        let r = document.querySelector('.l-down')
+        r.innerHTML = `
+          <p>${this.curSong}</>
+        `
+      }
+      _createRightEle() {
+        let r = document.querySelector('.r-down')
+        r.innerHTML = ''
+        this.playList.forEach(item => {
+          r.innerHTML += `<li>${item}</li>`
+        })
+        if (!this.playList.length) r.innerHTML = ''
+      }
+    }
+
+    function play(title) {
+      console.log('=>播放: ', title)
+      let pt = document.querySelector('.p-t')
+      pt.innerHTML = ``
+    }
+
+    function pause(e) {
+      let pt = document.querySelector('.p-t')
+      pt.innerHTML = `已暂停播放${e}`
+    }
+
+    function subs() {
+      p._subscribe('play', play)
+      p._subscribe('pause', pause)
+    }
+
+    let p = new Player()
+    subs()
+
+    let playBtn = document.querySelector('.play')
+    playBtn.onclick = (e) => {
+      p._publish('play')
+    }
+
+    let pauseBtn = document.querySelector('.pause')
+    pauseBtn.onclick = (e) => {
+      p._publish('pause')
+    }
+
+    let unSubscribe = document.querySelector('.un-sub')
+    unSubscribe.onclick = (e) => {
+      console.log('=>ee', e)
+      if (e.target.dataset.index == 1) {
+        e.target.dataset.index = '2'
+        unSubscribe.innerHTML = '订阅'
+        p._unSubscribe()
+      } else {
+        e.target.dataset.index = '1'
+        unSubscribe.innerHTML = '取消订阅'
+        subs()
+      }
+    }
+</script>
+</html>
+<style>
+.right{
+  list-style-type: none;
+}
+.p-c{
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  border-radius: 50%;
+  border: 1px solid #000;
+  text-align: center;
+}
+.un-sub{
+  width: 100px;
+  height: 20px;
+  border-radius: 10%;
+  border: 1px solid #000;
+  text-align: center;
+  margin-top: 10px;
+}
+.down{
+  display: flex;
+  margin-top: 20px;
+}
+.down .left,.right{
+  border: 1px solid #000;
+  padding: 20px;
+}
+.left{
+  width: 30%;
+  margin-right: 20px;
+}
+</style>

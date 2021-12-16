@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+</head>
+<body>
+  <!-- <div>
+    <div class="red"></div>
+    <div class="green"></div>
+  </div> -->
+</body>
+<script>
+   var imgFunc = (function () {
+      var imgNode = document.createElement('img');
+      document.body.appendChild(imgNode);
+      console.log('=>imgNode', imgNode)
+      return {
+        setSrc: function (src) {
+          imgNode.src = src;
+        }
+      }
+    })();
+    var proxyImage = (function () {
+      var img = new Image();
+      console.log('=>img', img)
+      img.onload = function () {
+        setTimeout(() => {
+          imgFunc.setSrc(this.src);
+        }, 3000)
+      }
+      return {
+        setSrc: function (src) {
+          imgFunc.setSrc('./img2.jpg');
+          img.src = src;
+        }
+      }
+    })();
+    proxyImage.setSrc('./img1.jpg');
+</script>
+<style>
+  .red {
+      width: 100px;
+      height: 100px;
+      background: red;
+  }
+  
+  .green {
+      width: 100px;
+      height: 100px;
+      background: green;
+  }
+</style>
+</html>

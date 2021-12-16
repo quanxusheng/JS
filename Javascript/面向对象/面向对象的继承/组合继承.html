@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  
+</body>
+<script>
+  function Per (name, age) {
+    this.name = name
+    this.age = age
+  }
+  Per.prototype.sayName = function () {
+    console.log(this.name)
+  }
+  Per.prototype.sayAge = function () {
+    console.log(this.age)
+  }
+  function Perclone (name, age) {
+    Per.call(this, name, age)
+  }
+  Perclone.prototype = new Per()
+  let p = new Perclone('yiyuan', 20)
+  let p2 = new Perclone('quan', 200)
+  p.sayName()
+  p.sayAge()
+  p2.sayName()
+  p2.sayAge()
+  // 组合继承结合了借用构造函数和原型继承的特点
+</script>
+</html>

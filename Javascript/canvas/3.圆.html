@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<style>
+  body{
+    text-align: center;
+    padding-top: 40px;
+  }
+  canvas {
+    margin: 0 auto;
+    box-shadow: 0 0 10px rgb(48, 47, 47);
+  }
+</style>
+<body>
+  <canvas id="draw" width="800" height="600"></canvas>
+</body>
+<script>
+  let draw = document.getElementById('draw')
+  let con = draw.getContext('2d')
+
+  con.beginPath()
+  con.strokeStyle = '#ff9900'
+  con.lineWidth = '10'
+  con.arc(400, 300, 250, 0, 2 * Math.PI)
+  con.moveTo(550, 300)
+  con.arc(400, 300, 150, 0, Math.PI)
+  con.closePath()
+  con.moveTo(300, 180)
+  con.arc(280, 180, 20, 0, Math.PI * 2)
+  con.moveTo(540, 180)
+  con.arc(520, 180, 20, 0, Math.PI * 2)
+  con.stroke()
+</script>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<style>
+  body{
+    text-align: center;
+    padding-top: 40px;
+  }
+  canvas {
+    margin: 0 auto;
+    box-shadow: 0 0 10px rgb(48, 47, 47);
+  }
+</style>
+<body>
+  <canvas id="draw" width="800" height="600"></canvas>
+</body>
+<script>
+  let draw = document.getElementById('draw')
+  let con = draw.getConText('2d')
+
+  function Ball (x, y, r, speed, color) {
+    this.x = x
+    this.y = y
+    this.r = r
+    this.speed = speed
+    this.color = color
+  }
+  Ball.prototype.draw = function () {
+    con.fillStyle = this.color
+    con.arc(this.x, this.y, this.r, 0, Math.PI * 2)
+  }
+  Ball.prototype.move = function () {
+    this.x += speed
+    if (this.x > draw.width - this.r)
+  }
+  let balla = new Ball(100, 50, 50, 2, 'red')
+  let ballb = new Ball(600, 50, 50, 2, 'blue')
+
+</script>
+</html>

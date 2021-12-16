@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  
+</body>
+<script>
+  let obj = {
+    color: ['green', 'orange']
+  }
+  // 寄生式继承
+  function creatf (k1) {
+    let clone = Object.create(k1)
+    clone.sayName = function () {
+      console.log(this.color)
+    }
+    return clone
+  }
+  let newF = creatf(obj)
+  let newF2 = creatf(obj)
+  console.log(newF)
+  // console.log(obj)
+  // console.log(newF2)
+  // newF.color.push('red')
+  // console.log(newF)
+  // console.log(obj)
+  // console.log(newF2)
+  //  原型式继承
+  // function Per () {}
+  // Per.prototype = obj
+  // let p1 = new Per()
+  // let p2 = new Per()
+  // console.log(p1)
+  // console.log(p2)
+  // p1.color.push('red')
+  // console.log(p1)
+  // console.log(p2)
+
+  // 寄生继承和原型式继承有引用数据类型共享的问题
+</script>
+</html>

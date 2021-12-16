@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div>
+    键盘价格：<span class="price">300</span>
+  </div>
+  <button class="btn">降价通知</button>
+</body>
+<script>
+
+  // 比如京东一个键盘300块，用户订阅了降价通知，价格降到200的时候通知用户购买
+  /* 
+    观察者模式
+    可以理解成一个被观察者对多个观察者的关系，所有的观察者在被观察者发生变化时只有统一的通知函数执行，耦合度较高
+  */
+  class KeyBoard {
+    constructor() {
+      this.customerList = []
+      this.price = 300
+      this.newPrice = ''
+    }
+    getCus(name) {
+      this.customerList.push(name)
+    }
+    notify() {
+      this.customerList.forEach(item => {
+        console.log('=>', `亲爱的用户${item}，您订阅的键盘现在已经降价到${this.newPrice}，快来京东商城购买吧！`)
+      })
+    }
+  }
+  let kb = new KeyBoard()
+
+  let index = 1
+  let timer = null
+  let btn = document.querySelector('.btn')
+  btn.onclick = (e) => {
+    let c = '用户' + (index++)
+    kb.getCus(c)
+    clearTimeout(timer)
+    timer = setTimeout(() => {
+      kb.newPrice = 200
+      updata()
+    }, 3000)
+  }
+
+  function updata() {
+    kb.notify()
+    let p = document.querySelector('.price')
+    p.innerHTML = `
+    <span style="text-decoration: line-through;color: #ccc;margin-right: 10px;">${kb.price}</span>
+    <span style="color: red;font-size: 20px;font-weight: bolder;">${kb.newPrice}</span>
+    `
+  }
+</script>
+</html>

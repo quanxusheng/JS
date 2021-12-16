@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <ul>
+    <li class="tab1"></li>
+    <li class="tab2"></li>
+    <li class="tab3" data-index="3" ></li>
+    <li class="tab4"></li>
+    <li></li>
+    <li></li>
+  </ul>
+</body>
+<script>
+  let u = document.getElementsByTagName('ul')[0]
+  u = window.addEventListener('click', (e) => {
+    console.log('=>e', e)
+  }, false)
+  console.log('=>', u)
+</script>
+<style>
+  li{
+    width: 100px;
+    height: 30px;
+    margin: 20px;
+    background: #000;
+  }
+</style>
+</html>

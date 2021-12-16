@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<style>
+  body{
+    text-align: center;
+    padding-top: 40px;
+  }
+  canvas {
+    position: absolute;
+    top: 50px;
+    left: 20px;
+    box-shadow: 0 0 10px rgb(48, 47, 47);
+  }
+</style>
+<body>
+  <canvas id="draw" width="800" height="600"></canvas>
+</body>
+<script>
+  let draw = document.getElementById('draw')
+  let con = draw.getContext('2d')
+
+  function Ball (x, y, r, sX, sY, color) {
+    this.ball = function () {
+      con.beginPath()
+      con.fillStyle = color
+      con.arc(x, y, r, 0, Math.PI * 2)
+      con.fill()
+    }
+    this.move = function () {
+      x += sX
+      if (x > draw.width - r) {
+        sX *= -1
+      } else if (x < r) {
+        sX *= -1
+      }
+      y += sY
+      if (y > draw.height - r) {
+        sY *= -1
+      } else if (y < r) {
+        sY *= -1
+      }
+    }
+  }
+  let mBall = new Ball(100, 100, 50, 2, 2, 'blue')
+  let mBall2 = new Ball (600, 300, 100, 3, 3, 'red')
+  // mBall.ball()
+  function start (fun) {
+    con.clearRect(0, 0, draw.width, draw.height)
+    mBall.ball()
+    mBall.move()
+    window.requestAnimationFrame(start)
+  }
+  function start2 () {
+    con.clearRect(0, 0, draw.width, draw.height)
+    mBall2.ball()
+    mBall2.move()
+    window.requestAnimationFrame(start)
+  }
+  start()
+  start2()
+</script>
+</html>

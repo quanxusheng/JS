@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    // let obj = {
+    //   name: 'alex'
+    // }
+    // 数据属性
+    /* configurable 能否通过delete删除属性从而重新定义
+    属性，能否修改属性特性或者修改属性为访问器属性 */
+    /* enumerable  能否通过for in遍历属性*/
+    /* writable 能否修改属性value值*/
+    /* value 属性的数据值 */
+    /* Object.defineProperty(obj, "name", {
+      // configurable: false,
+      // enumerable: false,
+      // writable: false,
+      value: 'yiyuan'
+    })
+    obj.name = 'jupao'
+    for (k in obj) {
+      console.log('user =>', k) // jupao
+    }
+    // delete obj.name
+    console.log('user =>', obj) */
+
+    // 访问器属性
+    // let obj = {
+    //   _year: 2020,
+    //   deposit: 10000
+    // }
+    // Object.defineProperty(obj, "year", {
+    //   set (val) {
+    //     if (val > 2020) {
+    //       this._year = val
+    //       this.deposit *= 2 
+    //     }
+    //   },
+    //   get () {
+    //     return this._year
+    //   }
+    // })
+    // obj.year = 2021
+    // console.log('user =>', obj._year)
+    // console.log('user =>', obj.year)
+    // console.log('user =>', obj)
+
+    // 结合
+    // let obj = {}
+    // Object.defineProperties(obj, {
+    //   _year: {
+    //     writable: true,
+    //     value: 2020
+    //   },
+    //   deposit: {
+    //     writable: true,
+    //     value: 10000
+    //   },
+    //   year: {
+    //     set (val) {
+    //       if (val > this._year) {
+    //         this._year = val
+    //         this.deposit *= 3
+    //       }
+    //     },
+    //     get () {
+    //       return this._year
+    //     }
+    //   }
+    // })
+    // obj.year = 2021
+    // console.log('user =>', obj)
+  </script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script type="module">
+    import Vue from './index.js'
+    var vue = new Vue({
+      props: {},
+      methods: {},
+      data() {
+        return {
+          test: 123,
+          arr: [1,3,4, 5] 
+        }
+      },
+      computed: {},
+      watch: {},
+    });
+    console.log('=>aaa', vue)
+    console.log(vue.arr);
+    vue.arr.unshift(2)
+    console.log(vue.arr);
+  </script>
+</body>
+</html>

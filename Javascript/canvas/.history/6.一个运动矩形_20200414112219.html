@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<style>
+  body{
+    text-align: center;
+    padding-top: 40px;
+  }
+  canvas {
+    position: absolute;
+    top: 50px;
+    left: 20px;
+    box-shadow: 0 0 10px rgb(48, 47, 47);
+  }
+</style>
+<body>
+  <canvas id="draw" width="800" height="600"></canvas>
+</body>
+<script>
+  let draw = document.getElementById('draw')
+  let con = draw.getContext('2d')
+  con.beginPath()
+  let x = 0, y = 0, width = 100, height = 100
+  con.fillRect(x, y, width, height)
+  setInterval(function () {
+    con.clearRect(x, y, width, height)
+    let speedX = 2, speedY = 2
+    if (x >= draw.width - width) {
+      x += -speedX
+    } else if (x <= 0) {
+      x += speedX
+    }
+    if (y >= draw.height - height) {
+      y += -speedY
+    } else if (y <= 0) {
+      y += speedY
+    }
+    console.log('user => ', x, y)
+    con.fillRect(x, y, width, height)
+  }, 20)
+
+</script>
+</html>

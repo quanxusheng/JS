@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<style>
+  body{
+    text-align: center;
+    padding-top: 40px;
+  }
+  canvas {
+    margin: 0 auto;
+    box-shadow: 0 0 10px rgb(48, 47, 47);
+  }
+</style>
+<body>
+  <canvas id="draw" width="800" height="600"></canvas>
+</body>
+<script>
+  let draw = document.getElementById('draw')
+  let con = draw.getContext('2d')
+
+  con.shadowColor = 'orange'
+  con.shadowOffsetX = 10
+  con.shadowOffsetY = 5
+  con.shadowBlur = 5
+
+  let gradient = con.createLinearGradient(200, 200, 600, 200)
+  gradient.addColorStop(0, '#a79ca1')
+  gradient.addColorStop(1, '#3a041c')
+
+  con.fillStyle = gradient
+  con.font = "bold italic 160px Arial"
+  con.fillText('Alex', 200, 200)
+</script>
+</html>

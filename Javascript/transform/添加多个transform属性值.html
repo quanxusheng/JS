@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<style>
+  *{
+    padding: 0;
+    margin: 0;
+    background: rgb(1, 54, 54);
+  }
+  .grid{
+    width: 300px;
+    height: 400px;
+    margin: 100px auto;
+  }
+  .grid div{
+    display: inline-block;
+    width: 100px;
+    height: 100px;
+    background: rgb(136, 202, 233);
+    transition: transform 1s;
+  }
+  .grid div:nth-child(1){
+    border-radius: 50px 0 0 0;
+    transform: translate(-30px, 150px) rotate(30deg);
+  }
+  .grid div:nth-child(2){
+    border-radius: 0 50px 0 0;
+    transform: translate(100px, 30px) rotate(65deg);
+  }
+  .grid div:nth-child(3){
+    transform: translate(-85px, -30px) rotate(60deg);
+  }
+  .grid div:nth-child(4){
+    transform: translate(70px, 120px) rotate(-80deg);
+  }
+  .grid div:nth-child(5){
+    border-radius: 0 0 0 50px;
+    transform: translate(-65px, 97px) rotate(-60deg);
+  }
+  .grid div:nth-child(6){
+    border-radius: 0 0 50px 0;
+    transform: translate(120px, 20px) rotate(-120deg);
+  }
+  .grid:hover div{
+    transform: none;
+  }
+</style>
+<body>
+  <div class="grid">
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+</body>
+</html>

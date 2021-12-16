@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<style>
+  body{
+    text-align: center;
+    padding-top: 40px;
+  }
+  canvas {
+    margin: 0 auto;
+    box-shadow: 0 0 10px rgb(48, 47, 47);
+  }
+</style>
+<body>
+  <canvas id="draw" width="800" height="600"></canvas>
+</body>
+<script>
+  let canvas = document.getElementById('draw')
+  let con = canvas.getContext('2d')
+
+  con.fillStyle = 'red'
+  let rect = {
+    x: canvas.width/2 - 20,
+    y: canvas.height/2 - 20,
+    w: 40,
+    h: 40
+  }
+  con.fillRect(rect.x, rect.y, rect.w, rect.h)
+
+  document.onkeydown = function (e) {
+    switch (e.keyCode) {
+      case 37:
+        rect.x -= 40
+      break;
+      case 38:
+        rect.y -= 40
+      break;
+      case 39:
+        rect.x += 40
+      break;
+      case 40:
+        rect.y += 40
+      break;
+    }
+    con.clearRect(0, 0, canvas.width, canvas.height)
+    con.fillRect(rect.x, rect.y, rect.w, rect.h)
+  }
+  // setInterval(random, 1000)
+  random()
+  function random() {
+    let x = parseInt(Math.random() * 800)
+    let y = parseInt(Math.random() * 600)
+    con.fillRect(x, y, rect.w, rect.h)
+  }
+</script>
+</html>

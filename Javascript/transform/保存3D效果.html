@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<style>
+  .grid{
+    width: 300px;
+    height: 300px;
+    position: relative;
+    margin: 100px auto;
+    perspective: 1000px;
+    transform-style: preserve-3d;
+    transition: transform 2s linear;
+  }
+  .grid:hover{
+    transform: rotateY(100deg);
+  }
+  .grid div{
+    width: 100%;
+    height: 100%;
+    line-height: 300px;
+    color: #fff;
+    border-radius: 50%;
+    text-align: center;
+    font-size: 35px;
+  }
+  .grid div:nth-of-type(1){
+    background: purple;
+  }
+  .grid div:nth-of-type(2){
+    background: green;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: rotateX(60deg) translateY(-30px);
+  }
+</style>
+<body>
+  <div class="grid">
+    <div>你好</div>
+    <div>再见</div>
+  </div>
+</body>
+</html>
