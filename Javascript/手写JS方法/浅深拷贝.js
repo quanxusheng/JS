@@ -25,21 +25,38 @@ let obj = {name: 'alex', age: 10, like: {name: 'yyyy'}}
 // console.log('=>', obj)
 // console.log('=>', obj2)
 
-arr = [1, 2, {color: 'red'}, [9]]
-function copy(obj) {
-  if(typeof obj !== 'object') return
-  let pre = Array.isArray(obj) ? [] : {}
-  for (let i in obj) {
-    if (typeof obj[i] === 'object') {
-      pre[i] = copy(obj[i])
+// arr = [1, 2, {color: 'red'}, [9]]
+// function copy(obj) {
+//   if(typeof obj !== 'object') return
+//   let pre = Array.isArray(obj) ? [] : {}
+//   for (let i in obj) {
+//     if (typeof obj[i] === 'object') {
+//       pre[i] = copy(obj[i])
+//     } else {
+//       pre[i] = obj[i]
+//     }
+//   }
+//   return pre
+// }
+// let obj2 = copy(arr)
+function copy2(data) {
+  if (typeof data !== 'object') return
+  let sub = Array.isArray(data) ? [] : {}
+  for(let [k, v] of Object.entries(data)) {
+     if (typeof v === 'object') {
+      sub[k] = copy2(v)
     } else {
-      pre[i] = obj[i]
+      sub[k] = v
     }
   }
-  return pre
+  return sub
 }
-let obj2 = copy(arr)
-obj2[2].color = 'yellow'
-obj2[3][0] = 0
-console.log('=>', arr)
-console.log('=>', obj2)
+let c2 = copy2(obj)
+console.log('=>obj', obj)
+c2.name = 'yiyuan'
+c2.like.age = 20
+console.log('=>c2', c2)
+// obj2[2].color = 'yellow'
+// obj2[3][0] = 0
+// console.log('=>', arr)
+// console.log('=>', obj2)
