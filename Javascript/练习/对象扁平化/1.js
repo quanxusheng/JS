@@ -49,13 +49,13 @@ let obj = {
             	result[key] = [];
             }
         } else {
-        	let objArr = Object.keys(value);
-          objArr.forEach(item => {
-            process(key?`${key}.${item}`:`${item}`, value[item])
-          });
-          if (objArr.length === 0 && key) {
-            result[key] = {};
-          }
+            let objArr = Object.keys(value);
+            objArr.forEach(item => {
+                process(key?`${key}.${item}`:`${item}`, value[item])
+            });
+            if (objArr.length === 0 && key) {
+                result[key] = {};
+            }
         }
     }
     process('', obj)

@@ -1,73 +1,63 @@
-var obj = {
-  name: 'alex',
-  sayName(name, age) {
-    console.log('=>', name)
-    console.log('=>', age)
-    console.log('=>', this.name)
-    return 222
+let arr = [
+    {id: 1, name: '部门1', pid: 0},
+    {id: 2, name: '部门2', pid: 1},
+    {id: 3, name: '部门3', pid: 1},
+    {id: 4, name: '部门4', pid: 3},
+    {id: 5, name: '部门5', pid: 4},
+]
+// [
+//     {
+//         "id": 1,
+//         "name": "部门1",
+//         "pid": 0,
+//         "children": [
+//             {
+//                 "id": 2,
+//                 "name": "部门2",
+//                 "pid": 1,
+//                 "children": []
+//             },
+//             {
+//                 "id": 3,
+//                 "name": "部门3",
+//                 "pid": 1,
+//                 "children": [
+//                     // 结果 ,,,
+//                 ]
+//             }
+//         ]
+//     }
+// ]
+
+// let newArr = []
+// function transData(data) {
+//     data.forEach((item, index) => {
+//         if (data[index + 1]) {
+//             if (item.id === data[index + 1].pid) {
+//                 item.children.push(data[index])
+//             } else {
+
+//             }
+//         }
+//     })
+// }
+// transData(arr)
+const getChildren = (data, result, pid) => {
+  for (const item of data) {
+    if (item.pid === pid) {
+      const newItem = {...item, children: []};
+      result.push(newItem);
+      getChildren(data, newItem.children, item.id);
+    }
   }
 }
 
-var obj2 = {
-  name: 'fangyiyuan'
+/**
+* 转换方法
+*/
+const arrayToTree = (data, pid) => {
+  const result = [];
+  getChildren(data, result, pid)
+  return result;
 }
-
-function Tea() {
-  console.log('=>', this)
-}
-var F1 = Tea.bind({name: 'quanxusheng'})
-F1()
-console.log('=>F1', F1)
-var F22 = F1.bind({name: 'alex'})
-F22()
-
-
-// function Stu (name, age) {
-//   console.log('=>this', this)
-//   this.name = name
-//   this.age = age
-// }
-// Stu.prototype.type = 'hhh'
-// var F1 = Stu.bind({name: 'quanxusheng'}, 'xxx', 999)
-// F1()
-// var F22 = Stu.bind({name: 'alex'}, 'yyy', 88)
-// F22()
-
-// Function.prototype.bind2 = function (obj, ...args) {
-//   var fn = this
-//   if (obj === undefined || obj === null) {
-//     return fn()
-//   }
-//   var ffn = function(...args2) {
-//     console.log('=new.target>', new.target)
-//     console.log('=this>', this)
-//     return fn.call(new.target ? this : obj, ...args, ...args2)
-//   }
-//   ffn.prototype = Object.create(fn.prototype)
-//   ffn.prototype.constructor = fn
-//   return ffn
-// }
-// var F2 = Stu.bind2({name: 'quanxusheng'}, 'xxx', 999)
-// console.log('=>F2', F2)
-// console.log('=>F22', new F2().type)
-
-// var fn1 = obj.sayName.bind2(obj2, 'qqqq', '99')
-// console.log('=>fn1', fn1)
-// fn1()
-
-// var a = obj.sayName.bind(obj2, 'qqqqq', 12)
-// obj.sayName.call(obj2, 'xxx', 12)
-/* Function.prototype.call2 = function(obj, ...arg) {
-  if (obj === undefined || obj === null) {
-    return this()
-  }
-  console.log('=>arg', arg)
-  // console.log('=>', this)
-  obj.fn = this
-  let fn1 = obj.fn(...arg)
-  delete obj.fn
-  return fn1
-}
-// let fn1 = obj.sayName.call2(obj2, 'xxx', 12)
-// let fn2 = obj.sayName.call2()
-console.log('=>fn1', fn2) */
+console.log('=>', arrayToTree(arr, 1))

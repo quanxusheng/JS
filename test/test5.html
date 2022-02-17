@@ -8,50 +8,132 @@
   <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
 </head>
 <body>
-  <!-- <div>
+  <div>
     <div class="red"></div>
     <div class="green"></div>
-  </div> -->
+    <div class="info">
+        萨达萨达阿四亟待解决九分电视剧封建等级萨达萨达阿四亟待解决九分电视剧封建等级萨达萨达阿四亟待解决九分电视剧封建等级萨达萨达阿四亟待解决九分电视剧封建等级萨达萨达阿四亟待解决九分电视剧封建等级萨达萨达阿四亟待解决九分电视剧封建等级萨达萨达阿四亟待解决九分电视剧封建等级萨达萨达阿四亟待解决九分电视剧封建等级萨达萨达阿四亟待解决九分电视剧封建等级
+    </div>
+    <div style="margin-top: 30px;width: 200px;">
+        <img src="./img1.jpg" alt="2222"  title="111" style="width: 100px;height:100px;float:left;clear:both">
+        <p style="word-break: break-all;">i have havehave havehave havehave</p>
+        <p>的撒娇低价撒旦就撒娇多久啊圣诞节按时间的撒娇低价撒旦就撒娇多久啊圣诞节按时间的撒娇低价撒旦就撒娇多久啊圣诞节按时间的撒娇低价撒旦就撒娇多久啊圣诞节按时间</p>
+    </div>
+    <img src="./img1.jpg" alt="" style="width: 100px;height:100px">
+    <img src="./img1.jpg" alt="" style="width: 100px;height:100px">
+    <iframe src="https://blog.csdn.net/BearRui/article/details/4702384" frameborder="0"></iframe>
+
+    <div>
+        <label for="Name">Number:</label>
+        <input type=“text“ id="Name" />
+        
+        <label>Date:<input type="text" name="B" /></label>
+    </div>
+    <div style="height: 1px;background: red;"></div>
+
+    <div style="height: 50px;background: red;">213123</div>
+  </div>
 </body>
 <script>
-   var imgFunc = (function () {
-      var imgNode = document.createElement('img');
-      document.body.appendChild(imgNode);
-      console.log('=>imgNode', imgNode)
-      return {
-        setSrc: function (src) {
-          imgNode.src = src;
+    localStorage.setItem('name', 55)
+    let red = document.querySelector('.red')
+    let green = document.querySelector('.green')
+    let set = new WeakSet()
+    set.add(red)
+    set.add(green)
+    red.onclick = function() {
+        alert(1)
+        localStorage.name = 777
+    }
+    red.onclick = function() {
+        alert(2)
+        localStorage.name = 888
+    }
+
+    let c = red
+    let d = {a: 1}
+    set.add(d)
+    red = null
+    d = null
+    // for(let k of set.entries) {
+    //     console.log('=>kkk', k)
+    //     // k.style.backgroundColor = 'black'
+    // }
+
+    let obj = { name: '123' }
+    obj = null
+    // window.onload = () => {
+    //     console.log('=>this', this)
+    // }
+
+    // 节流
+    function throttle(fn, defer) {
+        // 1
+        /* let last = 0
+        return function () {
+            let now = +new Date()
+            if (now - last > defer) {
+                fn.apply(this, arguments)
+                last = now
+            }
+        } */
+
+        // 2
+        /* let timer, last = 0
+        let i = 0
+        return function () {
+            if (!timer) {
+                timer = setTimeout(() => {
+                    timer = null
+                    fn.apply(this, arguments)
+                }, defer)
+            }
+        } */
+    }
+    // let throttleFn = throttle(() => { console.log('=>ee', 11111)}, 5000)
+    // document.addEventListener('scroll', throttleFn)
+
+    // 防抖
+    function debounce(fn, defer = 1000) {
+        let timer = null
+        return function (e) {
+            let args = arguments
+            clearTimeout(timer)
+            timer = setTimeout(function () {
+                fn.apply(this, args)
+            }, defer)
         }
-      }
-    })();
-    var proxyImage = (function () {
-      var img = new Image();
-      console.log('=>img', img)
-      img.onload = function () {
-        setTimeout(() => {
-          imgFunc.setSrc(this.src);
-        }, 3000)
-      }
-      return {
-        setSrc: function (src) {
-          imgFunc.setSrc('./img2.jpg');
-          img.src = src;
-        }
-      }
-    })();
-    proxyImage.setSrc('./img1.jpg');
+    }
+    let debounceFn = debounce(function (e) {
+        console.log('=>eee', e)
+    }, 2000)
+    document.addEventListener('scroll', debounceFn)
 </script>
 <style>
+    body{
+        display: table;
+    }
   .red {
       width: 100px;
       height: 100px;
       background: red;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
   }
   
   .green {
       width: 100px;
       height: 100px;
       background: green;
+  }
+  .info{
+      display: table-cell;
+      vertical-align: middle;
+      width: 300px;
+      height: 500px;
+      border: 1px solid #000;
   }
 </style>
 </html>
