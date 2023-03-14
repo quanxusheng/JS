@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div class="grid">的撒大家撒大家撒但是当你完全激动我们都撒到马赛克打什么打卡什么的</div>
+  <button class="btn">复制</button>
+  <div class="grid2"></div>
+  <textarea name="" id="" cols="30" rows="10"></textarea>
+</body>
+<script>
+  let text = document.getElementsByClassName('grid')[0]
+  let btn = document.querySelector('.btn')
+  let grid2 = document.querySelector('.grid2')
+  btn.onclick = function () {
+    let input = document.createElement('input')
+    grid2.appendChild(input)
+    input.style.opacity = 0
+    input.value = text.innerHTML
+    input.select()
+    
+    console.log('=input>', input)
+    let a = document.execCommand('copy')
+    document.removeChild(grid2)
+  }
+</script>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+</body>
+<script>
+  const vnode = {
+    tag: 'div',
+    props: {
+      onClick: () => alert('hello')
+    },
+    children: [
+      {
+        tag: 'span',
+        props: {
+          onclick: () => alert('sub1111')
+        },
+        children: 'subbbbb'
+      }
+    ]
+    // children: 'click me'
+  }
+  const component = function () {
+    return {
+      tag: 'div',
+      props: {
+        onclick: () => alert('component')
+      },
+      children: 'component'
+    }
+  }
+  const vnode2 = {
+    tag: component,
+  }
+  function renderer(vnode, container) {
+    console.log('=>', container)
+    if (typeof(vnode.tag) === 'function') {
+      mountComponent(vnode, container)
+    } else {
+      mountElement(vnode, container)
+    }
+  }
+  function mountComponent(vnode, el) {
+    const sub = vnode.tag()
+    renderer(sub, el)
+  }
+  function mountElement(vnode, container) {
+    let el = document.createElement(vnode.tag)
+    for (let key in vnode.props) {
+      if (/^on/.test(key)) {
+        console.log('=>key', key)
+        console.log('=>key', key.substring(2).toLowerCase())
+        el.addEventListener(key.substring(2).toLowerCase(), vnode.props[key])
+      }
+      if (typeof (vnode.children) === 'string') {
+        el.appendChild(document.createTextNode(vnode.children))
+      } else if (Array.isArray(vnode.children)) {
+        vnode.children.forEach(ele => renderer(ele, el))
+      }
+      container.appendChild(el)
+    }
+  }
+  renderer(vnode, document.body)
+  renderer(vnode2, document.body)
+</script>
+
+</html>

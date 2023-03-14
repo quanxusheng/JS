@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div class="btn">
+    <div class="sub"></div>
+  </div>
+</body>
+<script>
+  let btn = document.querySelector('.btn')
+  btn.addEventListener('click', e => {
+    console.log('=>btn', e)
+    console.log('=>btn', e.currentTarget)
+    console.log('=>btn', e.target)
+  })
+  // btn.onclick = (e) => {
+  //   console.log('=>btn', e)
+  // }
+  let sub = document.querySelector('.sub')
+  sub.addEventListener('click', e => {
+    console.log('=>sub', e)
+    console.log('=>sub', e.currentTarget)
+    console.log('=>sub', e.target)
+  })
+  // sub.onclick = (e) => {
+  //   console.log('=>sub', e)
+  // }
+</script>
+<style>
+  .btn{
+    width: 200px;
+    height: 200px;
+    background: #000;
+  }
+  .sub{
+    width: 100px;
+    height: 100px;
+    background: #fff;
+  }
+</style>
+</html>
