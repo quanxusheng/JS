@@ -1,9 +1,21 @@
-//express启动一个后台服务
-let express = require('express');
-let app = express();
+function withValue(value) {
+  var d = withValue.d || (
+    withValue.d = {
+      enumerable: false,
+      writable: false,
+      configurable: false,
+      value: null
+    }
+  );
+  console.log('=>1111', d)
+  console.log('=>value', value)
+  d.value = value;
+  return d;
+}
+var w = withValue(3)
+console.log('=>w', w)
 
-app.get('/say', (req, res) => {
-    let {cb} = req.query; //获取传来的callback函数名，cb是key
-    res.send(`${cb}('Hello!')`);
-});
-app.listen(3000);
+var obj = {}
+var w1 = Object.defineProperty(obj, 'b', w)
+console.log('=>obj', obj)
+console.log('=>w1', w1)

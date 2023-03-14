@@ -1,13 +1,15 @@
 var arr = [14, 2, 6, 3, 9, 11, 12, 13, 5, 1, 3]
 
-  for(let i = 0; i < arr.length; i++) {
-    for(let j = 0; j < arr.length - i; j++) {
-      if (arr[j] > arr[j + 1]) {
-        [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]]
-      }
-    }
-  }
-
+  // for(let i = 0; i < arr.length; i++) {
+  //   for(let j = 0; j < arr.length - i; j++) {
+  //     console.log('=>iii', i)
+  //     console.log('=>jjj', j)
+  //     if (arr[j] > arr[j + 1]) {
+  //       [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]]
+  //     }
+  //   }
+  // }
+// console.log('=>arr', arr)
 // const len = arr.length
 // let flag = 1
 // for (let i = 0; i < len; i++) {
@@ -28,4 +30,17 @@ var arr = [14, 2, 6, 3, 9, 11, 12, 13, 5, 1, 3]
 //     }
 //   }
 // }
-console.log('=>', arr)
+// console.log('=>', arr)
+
+// var arr = [14, 2, 6, 3, 9, 11, 12, 13, 5, 1, 3]
+var arr = [3, 2, 6, 3, 9, 11, 12, 13, 5, 1, 14]
+
+for(let j = 0; j < arr.length; j++) {
+  for(let i = 0; i < arr.length - i; i++) {
+    if (arr[i] > arr[i+1]) {
+      [arr[i], arr[i+1]] = [arr[i+1], arr[i]]
+    }
+  }
+  console.log('=>arr'+i, arr)
+}
+console.log('=>arr', arr)
