@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+</body>
+<script>
+  const obj = {
+    text: 'hello world'
+  }
+
+  let activeEffect
+  function effect(fn) {
+    activeEffect = fn
+    fn()
+  }
+
+  let bucket = new WeakMap()
+
+  const proxy = new Proxy(obj, {
+    get(target, key) {
+      if (!activeEffect) return
+      let maps = bucket.get(target)
+      if (!maps) {
+        bucket.set(target, maps = new Map())
+      }
+      let mapVals = maps.get(key)
+      if (!mapVals) {
+        maps.set(key, mapVals = new Set())
+      }
+      mapVals.add(activeEffect)
+      console.log('=>bucket', bucket)
+      return target[key]
+    },
+    set(target, key, newVal) {
+      if (target[key] === newVal) return
+      target[key] = newVal
+      console.log('=bucket>', bucket)
+      console.log('=target>', target)
+      let maps = bucket.get(target)
+      console.log('=>maps', maps)
+      let mapVals = maps.get(key)
+      console.log('=>mapVals', mapVals)
+      mapVals.forEach(fn => fn())
+      return true
+    }
+  })
+  effect(() => {
+    document.body.innerText = proxy.text
+  })
+  effect(() => {
+    setTimeout(() => {
+      alert(proxy.text)
+    }, 2000);
+  })
+  // effect(() => {
+  //   console.log('=proxy.text>', proxy.text)
+  // })
+  // proxy.text = 'qqqqzzz'
+  // setTimeout(() => {
+  //   proxy.text = 'kkkk'
+  // }, 2000)
+  // proxy.age = 19
+  // effect(() => {
+  //     console.log('=>222', proxy.text + proxy.age)
+  //   })
+</script>
+
+</html>
