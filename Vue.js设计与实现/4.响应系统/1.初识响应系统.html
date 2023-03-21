@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+</body>
+<script>
+  const data = {
+    text: 'hello world',
+    color: '#ffffff'
+    
+  }
+  let bucket = new Set()  // 桶，用来存副作用函数
+
+  let obj = new Proxy(data, {
+    get(target, key) {
+      bucket.add(effect)
+      bucket.add(effect2) // 得手动把副作用函数都添加到桶里，非常不灵活
+      return target[key]
+    },
+    set(target, key, newVal) {
+      if (target[key] === newVal) return
+      target[key] = newVal
+      bucket.forEach(fn => fn())
+      return true
+    }
+  })
+  function effect() {
+    console.log('=>', obj.text)
+    document.body.innerText = obj.text
+  }
+  effect()
+
+  function effect2() {
+    document.body.style.backgroundColor = obj.color
+  }
+  effect2()
+
+  setTimeout(() => {
+    obj.text = 'quan111'
+  }, 1000);
+
+  setTimeout(() => {
+    obj.text = 'zhao222'
+    obj.color = 'red'
+  }, 3000);
+
+  setTimeout(() => {
+    obj.age = 27
+    console.log('=>obj', obj)
+    console.log('=>bucket', bucket)
+  }, 4000);
+
+
+</script>
+
+</html>

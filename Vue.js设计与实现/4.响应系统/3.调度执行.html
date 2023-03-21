@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+</body>
+<script>
+
+  // 分支切换 cleanup
+  // 嵌套的effect和effect栈
+  // 避免无限递归循环 收集和触发同时进行
+
+  const data = {
+    text: 'hello world',
+    color: '#ffffff',
+    ok: true,
+    age: 18
+  }
+
+  let bucket = new WeakMap() // 桶，用来存副作用函数
+
+  let activeEffect = null // 当前运行的副作用函数
+  const effectStack = []
+
+  let obj = new Proxy(data, {
+    get(target, key) {
+      if (!activeEffect) return target[key]
+      track(target, key)
+      return target[key]
+    },
+    set(target, key, newVal) {
+      if (target[key] === newVal) return
+      target[key] = newVal
+
+      trigger(target, key)
+      return true
+    }
+  })
+  function cleanup(effectFn) {
+    for (let i = 0; i < effectFn.deps.length; i++) {
+      const fns = effectFn.deps[i]
+      fns.delete(effectFn)
+    }
+    effectFn.deps.length = 0
+  }
+
+  function effect(fn, options = {}) {
+    const effectFn = () => {
+      cleanup(effectFn)
+      activeEffect = effectFn
+      effectStack.push(effectFn)
+      fn()
+      effectStack.pop()
+      activeEffect = effectStack[effectStack.length - 1]
+    }
+    effectFn.options = options
+    effectFn.deps = []
+    effectFn()
+  }
+
+  function track(target, key) {
+    let maps = bucket.get(target)
+    if (!maps) {
+      bucket.set(target, maps = new Map())
+    }
+    let deps = maps.get(key)
+    if (!deps) {
+      maps.set(key, deps = new Set())
+    }
+    deps.add(activeEffect)
+    activeEffect.deps.push(deps)
+    // console.log('=>getget-bucket', bucket)
+    // console.log('=>getget-bucket-key', key)
+  }
+
+  function trigger(target, key) {
+    // console.log('=>setset-buckets', bucket)
+    // console.log('=>setset-bucket-key', key)
+    let maps = bucket.get(target)
+    if (!maps) return
+    let deps = maps.get(key)
+    if (!deps) return
+
+    let depsToRun = new Set()
+    deps.forEach(item => {
+      if (item != activeEffect) {
+        depsToRun.add(item)
+      }
+    })
+    // console.log('=>depsToRun', depsToRun)
+    depsToRun.forEach(effect => {
+      // console.log('=>effect', effect)
+
+      if (effect.options.scheduler) {
+        effect.options.scheduler(effect)
+      } else {
+        effect()
+      }
+
+    })
+  }
+
+  let jobsQueue = new Set()
+  let isFlushSta = false
+  function flushJob() {
+    if (isFlushSta) return
+    isFlushSta = true
+    let p = Promise.resolve()
+    p.then(() => {
+      jobsQueue.forEach(fn => fn())
+    }).finally(() => {
+      isFlushSta = false
+    })
+  }
+
+  effect(() => {
+    console.log('=>111', obj.age)
+  }, {
+    scheduler(fn) {
+      jobsQueue.add(fn)
+      flushJob()
+      // console.log('=>fn', fn)
+      // setTimeout(fn)
+      // obj.age++
+      // obj.age++
+    }
+  })
+
+
+</script>
+
+</html>
