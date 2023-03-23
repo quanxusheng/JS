@@ -13,9 +13,15 @@
 </body>
 <script>
 
-  // 分支切换 cleanup
-  // 嵌套的effect和effect栈
-  // 避免无限递归循环 收集和触发同时进行
+  // lazy懒执行
+  // 值的缓存 dirty value
+  /* 
+    在副作用函数调用的时候读取了计算属性的值 
+    在computed()中 get()读取value的时候
+    手动触发track(obj, 'value')收集依赖
+    在调度器 scheduler 中判断响应值变化的时候触发trigger
+  */
+
 
   const data = {
     text: 'hello',
@@ -57,17 +63,15 @@
       cleanup(effectFn)
       activeEffect = effectFn
       effectStack.push(effectFn)
-      console.log('=fn>', fn)
       const res = fn()
-      console.log('=>res', res)
-      return res
-      // return fn()
+      // console.log('=>res', res)
       effectStack.pop()
       activeEffect = effectStack[effectStack.length - 1]
+      return res
     }
     effectFn.options = options
     effectFn.deps = []
-    if (options.lazy) {
+    if (!options.lazy) {
       effectFn()
     }
     return effectFn
@@ -88,81 +92,114 @@
     // console.log('=>getget-bucket-key', key)
   }
 
-  function trigger(target, key) {
-    console.log('=>setset-buckets', bucket)
-    console.log('=>setset-bucket-key', key)
-    let maps = bucket.get(target)
-    if (!maps) return
-    let deps = maps.get(key)
-    console.log('=>deps', deps)
-    if (!deps) return
 
-    let depsToRun = new Set()
-    deps.forEach(item => {
-      if (item != activeEffect) {
-        depsToRun.add(item)
-      }
-    })
-    console.log('=>depsToRun', depsToRun)
-    depsToRun.forEach(effect => {
-      console.log('=>effect', effect)
+    function trigger(target, key) {
+      // console.log('=>setset-buckets', bucket)
+      // console.log('=>setset-bucket-key', key)
+      let maps = bucket.get(target)
+      if (!maps) return
+      let deps = maps.get(key)
+      // console.log('=>deps', deps)
+      if (!deps) return
 
-      if (effect.options.scheduler) {
-        effect.options.scheduler(effect)
-      } else {
-        effect()
-      }
+      let depsToRun = new Set()
+      deps.forEach(item => {
+        if (item != activeEffect) {
+          depsToRun.add(item)
+        }
+      })
+      // console.log('=>depsToRun', depsToRun)
+      depsToRun.forEach(effect => {
+        // console.log('=>effect', effect)
+        if (effect.options.scheduler) {
+          effect.options.scheduler(effect)
+        } else {
+          effect()
+        }
 
-    })
-  }
-
-  /* let jobsQueue = new Set()
-  let isFlushSta = false
-  function flushJob() {
-    if (isFlushSta) return
-    isFlushSta = true
-    let p = Promise.resolve()
-    p.then(() => {
-      jobsQueue.forEach(fn => fn())
-    }).finally(() => {
-      isFlushSta = false
-    })
-  }
-  const result = effect(
-    () => obj.text + ' ' + obj.text2,
-    {
-      // scheduler(fn) {
-      //   jobsQueue.add(fn)
-      //   flushJob()
-      //   // console.log('=>fn', fn)
-      //   // setTimeout(fn)
-      //   // obj.age++
-      //   // obj.age++
-      // }
-      lazy: false
+      })
     }
-  ) */
 
-  let myText = computed(() => obj.text + ' ' + obj.text2)
-
-  function computed(fn) {
-    console.log('=>ccccccc', fn)
-    let resFn = effect(
-      fn,
+    /* let jobsQueue = new Set()
+    let isFlushSta = false
+    function flushJob() {
+      if (isFlushSta) return
+      isFlushSta = true
+      let p = Promise.resolve()
+      p.then(() => {
+        jobsQueue.forEach(fn => fn())
+      }).finally(() => {
+        isFlushSta = false
+      })
+    }
+    const result = effect(
+      () => obj.text + ' ' + obj.text2,
       {
-        lazy: true
+        // scheduler(fn) {
+        //   jobsQueue.add(fn)
+        //   flushJob()
+        //   // console.log('=>fn', fn)
+        //   // setTimeout(fn)
+        //   // obj.age++
+        //   // obj.age++
+        // }
+        lazy: false
       }
-    )
-    console.log('=>resFn', resFn)
-    const obj = {
-      get value() {
-        return resFn()
+    ) */
+
+    let myText = computed(() => obj.text + ' ' + obj.text2)
+
+    function computed(fn) {
+      // console.log('=>ccccccc', fn)
+      let dirty = true
+      let value
+      // console.log('=>value', value)
+      // console.log('=>dirty', dirty)
+      let resFn = effect(
+        fn,
+        {
+          lazy: true,
+          scheduler() {
+            if (!dirty) {
+              /* 
+                计算属性响应式依赖发生变化时
+                手动触发trigger
+              */
+              dirty = true
+              trigger(obj, 'value')
+            }
+          }
+        }
+      )
+      // console.log('=>resFn', resFn)
+      const obj = {
+        get value() {
+          // console.log('=>value', value)
+          // console.log('=>dirty', dirty)
+          if (dirty) {
+            dirty = false
+            value = resFn()
+            // 计算属性被访问时收集副作用函数
+            track(obj, 'value')
+          }
+          return value
+
+          // return resFn()
+        }
       }
+      return obj
     }
-    return obj
-  }
-  console.log('=>myText', myText)
-  console.log('=>myText', myText.value)
+    effect(() => {
+      console.log('=>pppp', myText.value + '你好')
+    })
+    console.log('=>myText', myText.value)
+    console.log('=>myText', myText.value)
+    console.log('=>myText', myText.value)
+    obj.text2 = 'xusheng'
+    console.log('=>myText', myText.value)
+    console.log('=>setset-buckets', bucket)
+
+    
 
 </script>
 
