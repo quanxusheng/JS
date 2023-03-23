@@ -59,13 +59,17 @@
   }
 
   function effect(fn, options = {}) {
+    // console.log('=>options', options)
+    // console.log('=>fn', fn)
     const effectFn = () => {
       cleanup(effectFn)
       activeEffect = effectFn
+      // console.log('=>888', activeEffect)
       effectStack.push(effectFn)
       const res = fn()
       // console.log('=>res', res)
       effectStack.pop()
+      console.log('=>555', effectStack)
       activeEffect = effectStack[effectStack.length - 1]
       return res
     }
@@ -78,6 +82,8 @@
   }
 
   function track(target, key) {
+    // console.log('=>getget-bucket', bucket)
+    // console.log('=>getget-bucket-key', key)
     let maps = bucket.get(target)
     if (!maps) {
       bucket.set(target, maps = new Map())
@@ -87,9 +93,10 @@
       maps.set(key, deps = new Set())
     }
     deps.add(activeEffect)
+    // console.log('=>activeEffect', activeEffect)
+    // console.log('=>activeEffect', activeEffect.deps)
     activeEffect.deps.push(deps)
-    // console.log('=>getget-bucket', bucket)
-    // console.log('=>getget-bucket-key', key)
+
   }
 
 
