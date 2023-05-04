@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  
+</body>
+<script>
+
+
+  function *run(name) {
+    const n = yield `xiao ${name}`
+    return n
+  }
+  let fn = run('quan')
+  let a = fn.next()
+  console.log('=>', fn)
+  console.log('=>', a)
+  console.log('=>', a.value)
+
+  let a2 = fn.next('zhao')
+  let a3 = run('zhao')
+  console.log('=>', a2)
+  console.log('=>', a2.value)
+  console.log('=>', a3.next().value)
+
+</script>
+</html>

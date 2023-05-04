@@ -1,0 +1,12 @@
+*{
+  font-size: 40px;
+  color: brown;
+  font-weight: bold;
+}
+.div{
+  /* background: red; */
+  /* background-image: url('./img2.jpg'); */
+  width: 200px;
+  height: 200px;
+  
+}

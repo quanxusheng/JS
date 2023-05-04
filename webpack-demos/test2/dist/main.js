@@ -1,0 +1,1 @@
+(()=>{var o={82:o=>{o.exports=class{constructor(){this.name="xiangji"}}}},e={};function n(t){var r=e[t];if(void 0!==r)return r.exports;var s=e[t]={exports:{}};return o[t](s,s.exports,n),s.exports}(()=>{const o=n(82);console.log("=>","hello 222");let e=new o;console.log("=>cat.name",e),console.log("=>cat.name",e.name)})()})();
