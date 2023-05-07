@@ -7,40 +7,34 @@
   <title>Document</title>
 </head>
 <body>
-  <div class="btn">
-    <div class="sub"></div>
+  <div>
+    <input type="file" onchange="onChange(event)">
+    <img src="" alt="">
+    <img src="" alt="2222" class="img2">
   </div>
 </body>
 <script>
-  let btn = document.querySelector('.btn')
-  btn.addEventListener('click', e => {
-    console.log('=>btn', e)
-    console.log('=>btn', e.currentTarget)
-    console.log('=>btn', e.target)
-  })
-  // btn.onclick = (e) => {
-  //   console.log('=>btn', e)
-  // }
-  let sub = document.querySelector('.sub')
-  sub.addEventListener('click', e => {
-    console.log('=>sub', e)
-    console.log('=>sub', e.currentTarget)
-    console.log('=>sub', e.target)
-  })
-  // sub.onclick = (e) => {
-  //   console.log('=>sub', e)
-  // }
+  function onChange(e) {
+    console.log('=>', e)
+    const file = e.target.files[0]
+    let newFile = file.slice(0, file.size / 2)
+    console.log('=>', file)
+    console.log('=>', newFile)
+    const url = URL.createObjectURL(newFile)
+    console.log('=>', url)
+    let img = document.querySelector('img')
+    img.src = url
+
+    let fr = new FileReader()
+    const fstring = fr.readAsDataURL(file)
+    fr.onload = (e) => {
+      console.log('=>fr', e)
+      let img2 = document.querySelector('.img2')
+      img2.src = e.target.result
+    }
+    console.log('=>fstring', fstring)
+  }
 </script>
 <style>
-  .btn{
-    width: 200px;
-    height: 200px;
-    background: #000;
-  }
-  .sub{
-    width: 100px;
-    height: 100px;
-    background: #fff;
-  }
 </style>
 </html>

@@ -136,7 +136,113 @@
   }
 
 
-  let myText = computed(() => obj.text + ' ' + obj.text2)
+    function trigger(target, key) {
+      // console.log('=>setset-buckets', bucket)
+      // console.log('=>setset-bucket-key', key)
+      let maps = bucket.get(target)
+      if (!maps) return
+      let deps = maps.get(key)
+      // console.log('=>deps', deps)
+      if (!deps) return
+
+      let depsToRun = new Set()
+      deps.forEach(item => {
+        if (item != activeEffect) {
+          depsToRun.add(item)
+        }
+      })
+      // console.log('=>depsToRun', depsToRun)
+      depsToRun.forEach(effect => {
+        // console.log('=>effect', effect)
+        if (effect.options.scheduler) {
+          effect.options.scheduler(effect)
+        } else {
+          effect()
+        }
+
+      })
+    }
+
+    /* let jobsQueue = new Set()
+    let isFlushSta = false
+    function flushJob() {
+      if (isFlushSta) return
+      isFlushSta = true
+      let p = Promise.resolve()
+      p.then(() => {
+        jobsQueue.forEach(fn => fn())
+      }).finally(() => {
+        isFlushSta = false
+      })
+    }
+    const result = effect(
+      () => obj.text + ' ' + obj.text2,
+      {
+        // scheduler(fn) {
+        //   jobsQueue.add(fn)
+        //   flushJob()
+        //   // console.log('=>fn', fn)
+        //   // setTimeout(fn)
+        //   // obj.age++
+        //   // obj.age++
+        // }
+        lazy: false
+      }
+    ) */
+
+    let myText = computed(() => obj.text + ' ' + obj.text2)
+
+    function computed(fn) {
+      // console.log('=>ccccccc', fn)
+      let dirty = true
+      let value
+      // console.log('=>value', value)
+      // console.log('=>dirty', dirty)
+      let resFn = effect(
+        fn,
+        {
+          lazy: true,
+          scheduler() {
+            if (!dirty) {
+              /* 
+                计算属性响应式依赖发生变化时
+                手动触发trigger
+              */
+              dirty = true
+              trigger(obj, 'value')
+            }
+          }
+        }
+      )
+      // console.log('=>resFn', resFn)
+      const obj = {
+        get value() {
+          // console.log('=>value', value)
+          // console.log('=>dirty', dirty)
+          if (dirty) {
+            dirty = false
+            value = resFn()
+            // 计算属性被访问时收集副作用函数
+            track(obj, 'value')
+          }
+          return value
+
+          // return resFn()
+        }
+      }
+      return obj
+    }
+    console.log('=>myText', myText.value)
+      console.log('=>myText', myText.value)
+    effect(() => {
+      console.log('=>pppp', myText.value + '你好')
+    })
+    console.log('=>myText', myText.value)
+    console.log('=>myText', myText.value)
+    console.log('=>myText', myText.value)
+    obj.text2 = 'xusheng'
+    console.log('=>myText', myText.value)
+    console.log('=>setset-buckets', bucket)
 
   function computed(getter) {
     let value
