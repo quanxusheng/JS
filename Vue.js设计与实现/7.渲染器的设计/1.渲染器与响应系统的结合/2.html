@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  <div id="app"></div>
+</body>
+<script src="https://unpkg.com/@vue/reactivity@3.0.5/dist/reactivity.global.js"></script>
+
+<script>
+  const vnode = {
+    type: 'h1',
+    children: 'hello'
+  }
+  function createRenderer(options) {
+    const {
+      createElement,
+      setElement,
+      insert,
+    } = options
+    function patch(n1, n2, container) { // n1旧，n2新vnode
+      if(!n1) {
+         // 旧vnode不存在，意味着是挂载
+        mountElement(n2, container)
+      } else {
+
+      }
+    }
+    function mountElement(vnode, container) {
+      // const el = document.createElement(vnode.type)
+      const el = createElement(vnode.type)
+      if (typeof vnode.children === 'string') {
+        // el.innerText = vnode.children
+        setElement(el, vnode.children)
+      }
+      insert(container, el)
+      // container.appendChild(el)
+    }
+    function render(vnode, container) {
+      if (vnode) {
+        // 新vnode存在，则与旧vnode传给patch函数，进行打补丁
+        patch(container._vnode, vnode, container)
+      } else {
+        if (container._vnode) {
+          // 如果旧vnode存在，新vnode不存在，则是卸载操作 unmount
+          container.innerHTML = ''
+        }
+      }
+      container._vnode = vnode
+    }
+    return {
+      render
+    }
+  }
+
+  const renderer = createRenderer(
+    {
+      // 用于创建元素
+      createElement(tag) {
+        return document.createElement(tag)
+      },
+      // 用于设置元素的文本节点
+      setElement(el,text) {
+        el.textContent = text
+      },
+      // 用于在给定的 parent 下添加指定元素
+      insert(el, parent, anchor = null) {
+        parent.insertBefore(el, anchor)
+      }
+    }
+  )
+  const container = document.getElementById('app')
+  // 首次渲染
+  renderer.render(oldNode, container)
+  renderer.render(newNode, container)
+</script>
+
+</html>

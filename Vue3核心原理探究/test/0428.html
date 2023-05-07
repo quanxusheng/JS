@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+</body>
+<script>
+    // let text = 'xiao zhao'
+    let data = {
+        name: 'xiao zhao',
+        age: 28
+    }
+    let bucket = new Set()
+    let activeEffect = null
+
+    let obj = new Proxy(data, {
+        get(target, key) {
+            console.log('=>ggg', key)
+            if (activeEffect) {
+                bucket.add(activeEffect)
+            }
+            return Reflect.get(target, key)
+        },
+        set(target, key, value) {
+            if (value === target[key]) return
+            target[key] = value
+            bucket.forEach(fn => fn());
+        }
+    })
+    // function render() {
+    //     document.body.innerText = obj.name
+    // }
+    // render()
+    obj.name = 'xiao quan'
+    // console.log("🚀 ~ file: 0428.html:34 ~ obj:", obj)
+    // render()
+    function effect(fn){
+        activeEffect = fn
+        fn()
+    }
+    effect(
+        () => {
+            document.body.innerText = obj.name + obj.age
+        }
+    )
+    obj.name = 'xiang ji'
+    obj.age = 99
+    console.log('=>bucket', bucket)
+</script>
+</html>
