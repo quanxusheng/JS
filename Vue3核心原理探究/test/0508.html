@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+</body>
+<script>
+    // let a = 1, b = 10
+    let obj = {
+        name: 'zhao',
+        age: 18,
+        like: 'read'
+    }
+    let bucket = new Set()
+    let activeEffect
+    // let bucket = new WeakMap()
+
+
+    let data = new Proxy(obj, {
+        get(target, key) {
+            // console.log('=>ggg', target)
+            console.log('=>ggg', key)
+            console.log('=>ggg-activeEffect', activeEffect)
+            if (activeEffect) {
+                bucket.add(activeEffect)
+            }
+            return target[key]
+            // return Reflect.get(target, key)
+        },
+        set(target, key, newVal) {
+            // console.log('=>sss', target)
+            console.log('=>sss', key)
+            // console.log('=>sss-activeEffect', activeEffect)
+            // console.log('=>sss', value)
+
+            console.log('=>bucket', bucket)
+            // if (target[key] === value) return
+            // Reflect.set(target, key, value)
+            target[key] = newVal
+            bucket.forEach(fn => fn())
+            return true
+        }
+    })
+    function effect(fn) {
+        activeEffect = fn
+        fn()
+    }
+    effect(
+        () => {
+            document.body.innerText = data.name
+        }
+    )
+    effect(
+        () => {
+            console.log('=>data.age:', data.age)
+        }
+    )
+    // data.name = 'quan'
+    data.age = 28
+    console.log('=>bucket', bucket)
+    // effect(
+    //     () => {
+    //         data.name = 'quan'
+    //     }
+    // )
+    // effect(
+    //     () => {
+    //         data.like = 'code'
+    //     }
+    // )
+    
+    // function printName() {
+    //     console.log('=>printName', data.name)
+    // }
+    // function changeName() {
+    //     data.name = 'qing yun'
+    // }
+</script>
+</html>
