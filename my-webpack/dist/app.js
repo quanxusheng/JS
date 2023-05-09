@@ -91,9 +91,21 @@
   !*** ./src/app.js ***!
   \********************/
 /*! no static exports found */
-/***/ (function(module, exports) {
+/***/ (function(module, exports, __webpack_require__) {
 
-eval("console.log('=>', '111111.1111js入口2222')\n\n//# sourceURL=webpack:///./src/app.js?");
+eval("const img = __webpack_require__(/*! ./img2.jpg */ \"./src/img2.jpg\")\r\nconsole.log('=>', img)\r\nconsole.log('=>', '111111.1111js入口2222')\n\n//# sourceURL=webpack:///./src/app.js?");
+
+/***/ }),
+
+/***/ "./src/img2.jpg":
+/*!**********************!*\
+  !*** ./src/img2.jpg ***!
+  \**********************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony default export */ __webpack_exports__[\"default\"] = (__webpack_require__.p + \"imgs/img2.jpg\");\n\n//# sourceURL=webpack:///./src/img2.jpg?");
 
 /***/ })
 
