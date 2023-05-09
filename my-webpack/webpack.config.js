@@ -1,12 +1,10 @@
 
 const path = require('path')
-const webpack = 'webpack'
-const HtmlWebpackPlugin = require('html-webpack-plugin')
+// const HtmlWebpackPlugin = require('html-webpack-plugin')
 const {CleanWebpackPlugin} = require('clean-webpack-plugin')
-// import HtmlWebpackPlugin from 'html-webpack-plugin'
 
 module.exports = {
-  mode: 'production',
+  mode: 'development',
   entry: {
     index: './src/index.js',
     app: './src/app.js'
@@ -16,11 +14,10 @@ module.exports = {
     hot: true
   },
   plugins: [
-    // new webpack.ProgressPlugin(),
     // new CleanWebpackPlugin(),
-    new HtmlWebpackPlugin({
-      title: 'my-webpack'
-    })
+    // new HtmlWebpackPlugin({
+    //   title: 'my-webpack'
+    // })
   ],
   output: {
     // filename: 'bundle.js',
