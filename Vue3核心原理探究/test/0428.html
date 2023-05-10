@@ -7,49 +7,99 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
+
 <body>
 </body>
 <script>
-    // let text = 'xiao zhao'
-    let data = {
+    let obj = {
         name: 'xiao zhao',
-        age: 28
+        age: 28,
+        ok: true
     }
-    let bucket = new Set()
+    let bucket = new WeakMap()
     let activeEffect = null
+    let activeEffectStack = []
 
-    let obj = new Proxy(data, {
+    let data = new Proxy(obj, {
         get(target, key) {
-            console.log('=>ggg', key)
-            if (activeEffect) {
-                bucket.add(activeEffect)
-            }
+            // console.log('=>ggg', key)
+            track(target, key)
             return Reflect.get(target, key)
         },
         set(target, key, value) {
             if (value === target[key]) return
             target[key] = value
-            bucket.forEach(fn => fn());
+            trigger(target, key)
         }
     })
-    // function render() {
-    //     document.body.innerText = obj.name
-    // }
-    // render()
-    obj.name = 'xiao quan'
-    // console.log("🚀 ~ file: 0428.html:34 ~ obj:", obj)
-    // render()
-    function effect(fn){
-        activeEffect = fn
-        fn()
-    }
-    effect(
-        () => {
-            document.body.innerText = obj.name + obj.age
+    function track(target, key) {
+        if (!activeEffect) return target[key]
+
+        let depsMap = bucket.get(target)
+        if (!depsMap) {
+            bucket.set(target, depsMap = new Map())
         }
-    )
-    obj.name = 'xiang ji'
-    obj.age = 99
+        let deps = depsMap.get(key)
+        if (!deps) {
+            depsMap.set(key, deps = new Set())
+        }
+        deps.add(activeEffect)
+
+        activeEffect.deps.push(deps)
+    }
+
+    function trigger(target, key) {
+        let depsMap = bucket.get(target)
+        if (!depsMap) return
+        let deps = depsMap.get(key)
+        let effectRun = new Set(deps)
+        effectRun.forEach(eff => eff())
+    }
+
+    function clearUp(effectFn) {
+        for (let i = 0; i < effectFn.deps.length; i++) {
+            let deps = effectFn.deps[i]
+            deps.delete(effectFn)
+        }
+        effectFn.deps.length = 0
+        delete effectFn._fn
+    }
+
+    function effect(fn) {
+        const effectFn = () => {
+            clearUp(effectFn)
+            activeEffect = effectFn
+            activeEffectStack.push(effectFn)
+            console.log('=>111', activeEffectStack)
+            fn()
+            activeEffect._fn = fn + '' // 方便查看收集到的副作用函数的函数体
+            activeEffectStack.pop()
+            activeEffect = activeEffectStack[activeEffectStack.length - 1]
+        }
+        effectFn.deps = []
+        effectFn()
+    }
+
+    effect(function effectFn1() {
+        // console.log('=>effectFn1', data.name)
+        effect(function effectFn2() {
+            console.log('=>effectFn2', data.age)
+        })
+        console.log('=>effectFn1', data.name)
+    })
+    // effect(
+    //     () => {
+    //         console.log('=>', 111)
+    //         document.body.innerText = data.ok ? data.name + data.age : 'not'
+    //     }
+    // )
+    // data.name = 'xiaoquan '
+    setTimeout(() => {
+        data.name = 'qingyun'
+        // data.age = 29
+        // data.ok = false
+    }, 2000);
     console.log('=>bucket', bucket)
 </script>
+
 </html>
