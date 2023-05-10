@@ -22,6 +22,7 @@
     }
 
     let activeEffect
+    let effectStack = []
     let bucket = new WeakMap()
 
     const data = new Proxy(obj, {
@@ -56,16 +57,25 @@
         let depsMap = bucket.get(target)
         if (!depsMap) return
         let deps = depsMap.get(key)
-        let effectRun = new Set(deps) // 解决cleanup造成死循环
+        console.log('=>deps', deps)
+        // let effectRun = new Set(deps) // 解决cleanup造成死循环
+        let effectRun = new Set()
+        deps.forEach(dep => {
+            if (dep !== activeEffect) {
+                effectRun.add(dep)
+            }
+        })
         effectRun.forEach(eff => eff())
     }
     function effect(fn) {
         const effectFn = () => {
             clearUp(effectFn)
             activeEffect = effectFn
+            effectStack.push(effectFn)
             activeEffect._fn = fn
             fn()
-            activeEffect = null
+            effectStack.pop()
+            activeEffect = effectStack[effectStack.length - 1]
         }
         effectFn.deps = []
         effectFn()
@@ -75,16 +85,34 @@
             let effs = effectFn.deps[i]
             effs.delete(effectFn)
         }
+        // effectFn.deps.length = 0
     }
-    effect(function effect1() {
-        console.log('=>effect1', data.name)
-            effect(function effect2() {
-                    console.log('=>effect2', data.hobby)
-                }
-            )
-            // console.log('=>effect1', data.name)
-        }
+
+    // 嵌套函数
+    // effect(function effect1() {
+    //     // console.log('=>effect1', data.name)
+    //     effect(function effect2() {
+    //         console.log('=>effect2', data.hobby)
+    //     }
+    //     )
+    //     console.log('=>effect1', data.name)
+    // }
+    // )
+
+
+    // effect(
+    //     () => console.log('=>', data.age)
+    // )
+    // 无限递归自己导致死循环
+    effect(
+        () => data.age++
     )
+    console.log('=>nnn', data)
+    console.log('=>nnn', data.age)
+    data.age++
+    console.log('=>nnn', data)
+    console.log('=>nnn', data.age)
+    // console.log('=>nnn', data)
     console.log('=>bucket', bucket)
     // setTimeout(() => {
     //     data.ok = false
