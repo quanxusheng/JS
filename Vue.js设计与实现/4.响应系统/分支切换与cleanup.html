@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+</body>
+<script>
+    const obj = {
+        name: 'zhao',
+        name2: 'zhaozhao',
+        age: 18,
+        hobby: 'read',
+        color: 'blue',
+        ok: true,
+    }
+
+    let activeEffect
+    let bucket = new WeakMap()
+
+    const data = new Proxy(obj, {
+        get(target, key) {
+            track(target, key)
+            return target[key]
+        },
+        set(target, key, newVal) {
+            target[key] = newVal
+            console.log('=>sss-key', key)
+            trigger(target, key)
+            // console.log('=>sss-bucket', bucket)
+            return true
+        }
+    })
+    function track(target, key) {
+        if (!activeEffect) return target[key]
+        let depsMap = bucket.get(target)
+        if (!depsMap) {
+            bucket.set(target, (depsMap = new Map()))
+        }
+        let deps = depsMap.get(key)
+        if (!deps) {
+            depsMap.set(key, (deps = new Set()))
+        }
+        deps.add(activeEffect)
+        // console.log('=ggg-key>', key)
+        console.log('=ggg-deps>', deps)
+        console.log('=ggg-activeEffect>', activeEffect)
+        console.log('=ggg-activeEffect.deps>', activeEffect.deps)
+        activeEffect.deps.push(deps)
+        
+    }
+    function trigger(target, key) {
+        let depsMap = bucket.get(target)
+        if (!depsMap) return
+        let deps = depsMap.get(key)
+        // console.log('=sss-deps>', deps)
+        let effectRun = new Set(deps) // 解决cleanup造成死循环
+        effectRun.forEach(eff => eff())
+    }
+    function effect(fn) {
+        const effectFn = () => {
+            // console.log('=>effect-effectFn.deps', effectFn.deps)
+            clearUp(effectFn)
+            activeEffect = effectFn
+            fn()
+            activeEffect = null
+        }
+        effectFn.deps = []
+        effectFn()
+    }
+    function clearUp(effectFn) {
+        console.log('=>clearUp-effectFn', effectFn)
+        console.log('=>clearUp-effectFn.deps', effectFn.deps)
+        for (let i = 0; i < effectFn.deps.length; i++) {
+            let effs = effectFn.deps[i]
+            effs.delete(effectFn)
+        }
+    }
+    effect(
+        () => {
+            document.body.innerText = data.ok ? data.name2 : 'not'
+            // console.log('=>bucket', bucket)
+        }
+    )
+    setTimeout(() => {
+        data.ok = false
+    }, 2000);
+    setTimeout(() => {
+        data.ok = true
+        console.log('=>bucket', bucket)
+    }, 4000);
+</script>
+
+</html>

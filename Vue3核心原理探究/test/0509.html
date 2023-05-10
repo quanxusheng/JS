@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+</body>
+<script>
+    const obj = {
+        name: 'zhao',
+        age: 18,
+        hobby: 'read',
+        color: 'blue'
+    }
+    let bucket = new WeakMap()
+    const data = new Proxy(obj, {
+        get(target, key) {
+            if (!activeEffect) return target[key]
+            let depsMap = bucket.get(target)
+            if (!depsMap) {
+                bucket.set(target, (depsMap = new Map()))
+            }
+            let deps = depsMap.get(key)
+            if (!deps) {
+                depsMap.set(key, (deps = new Set()))
+            }
+            // console.log('=ggg-key>', key)
+            // console.log('=ggg-deps>', deps)
+            // console.log('=ggg-activeEffect>', activeEffect)
+            deps.add(activeEffect)
+            return target[key]
+        },
+        set(target, key, newVal) {
+            target[key] = newVal
+            console.log('=>sss-key', key)
+            // console.log('=>sss-bucket', bucket)
+            let depsMap = bucket.get(target)
+            if (!depsMap) return
+            let deps = depsMap.get(key)
+            console.log('=sss-deps>', deps)
+            deps && deps.forEach(fn => fn())
+            return true
+        }
+    })
+    function effect(fn) {
+        activeEffect = fn
+        fn()
+        activeEffect = null
+    }
+    effect(
+        () => {
+            document.body.innerText = data.name + data.age
+        }
+    )
+    effect(
+        () => {
+            console.log('=>age:', data.age)
+        }
+    )
+    effect(
+        () => {
+            console.log('=>hobby:', data.hobby)
+        }
+    )
+    console.log('=>bucket', bucket)
+    setTimeout(() => {
+        // data.age = 99
+        data.name = 'xusheng'
+    }, 2000)
+    // console.log('=>nnn', data.color)
+    // console.log('=>bucket222', bucket)
+    // data.color = 'green'
+    // setTimeout(() => {
+    //     data.age = 100
+    // },1000)
+    // data.name = 'quan'
+    // setTimeout(() => {
+    //     data.name = 'xusheng'
+    // }, 2000)
+    // setTimeout(() => {
+    //     data.age = 20
+    // }, 4000)
+</script>
+</html>
