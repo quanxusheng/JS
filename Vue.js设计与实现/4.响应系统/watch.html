@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+</body>
+<script>
+    const obj = {
+        name: 'zhao',
+        name2: 'zhaozhao',
+        age: 18,
+        hobby: 'read',
+        color: 'blue',
+        ok: true,
+    }
+
+    let activeEffect
+    let effectStack = []
+    let bucket = new WeakMap()
+
+    const data = new Proxy(obj, {
+        get(target, key) {
+            track(target, key)
+            return target[key]
+        },
+        set(target, key, newVal) {
+            target[key] = newVal
+            trigger(target, key)
+            return true
+        }
+    })
+    function track(target, key) {
+        if (!activeEffect) return target[key]
+        let depsMap = bucket.get(target)
+        if (!depsMap) {
+            bucket.set(target, (depsMap = new Map()))
+        }
+        let deps = depsMap.get(key)
+        if (!deps) {
+            depsMap.set(key, (deps = new Set()))
+        }
+        deps.add(activeEffect)
+        activeEffect.deps.push(deps)
+    }
+    function trigger(target, key) {
+        let depsMap = bucket.get(target)
+        console.log('=depsMap>', depsMap)
+        if (!depsMap) return
+        let deps = depsMap.get(key)
+        if (!deps) return
+        // let effectRun = new Set(deps) // 解决cleanup造成死循环
+        let effectRun = new Set()
+        console.log('=deps>', deps)
+        deps.forEach(dep => {
+            if (dep !== activeEffect) {
+                effectRun.add(dep)
+            }
+        })
+        effectRun.forEach(eff => {
+            if (eff.options.scheduler) {
+                eff.options.scheduler(eff)
+            } else {
+                eff()
+            }
+        })
+    }
+    function clearUp(effectFn) {
+        // console.log('=>clearUp', effectFn.deps)
+        for (let i = 0; i < effectFn.deps.length; i++) {
+            let effs = effectFn.deps[i]
+            effs.delete(effectFn)
+        }
+        effectFn.deps.length = 0
+    }
+
+
+    let jubQueue = new Set()
+    let isFlushing = false
+    function flushJob() {
+        if (!isFlushing) {
+            isFlushing = true
+            let p = Promise.resolve()
+            p.then(() => {
+                // console.log('=>jubQueue', jubQueue)
+                jubQueue.forEach(job => job())
+            }).finally(() => {
+                jubQueue = new Set()
+                isFlushing = false
+            })
+        }
+    }
+
+    /* 
+    watch: {
+        data(n, o) {
+
+        }
+    }
+    watch: {
+        data: {
+            handler(n, o) {
+                
+            }
+        }
+    } 
+    */
+
+    function effect(fn, options = {}) {
+        const effectFn = () => {
+            clearUp(effectFn)
+            activeEffect = effectFn
+            effectStack.push(effectFn)
+            activeEffect._fn = fn
+            const res = fn()
+            effectStack.pop()
+            activeEffect = effectStack[effectStack.length - 1]
+            return res
+        }
+        effectFn.deps = []
+        effectFn.options = options
+        if (!options.lazy) {
+            effectFn()
+        }
+        return effectFn
+    }
+    watch(
+        // data, // newVal, oldVal值是同一个，指向同一个引用地址
+        () => data.name,
+        // () => data.name + data.age,
+        (newVal, oldVal) => {
+            console.log('=>newVal', newVal)
+            console.log('=>oldVal', oldVal)
+            document.body.innerText = `${newVal}   ${oldVal}`
+        },
+        {
+            immediate: true
+        }
+    )
+
+
+    function watch(source, callback, opts) {
+        let getter
+        let newVal, oldVal
+        if (typeof source === 'function') {
+            getter = source
+        } else {
+            // } else if (typeof source === 'object') {
+            getter = () => traverse(source)
+        }
+
+        let clean
+        function onCleanup(fn) {
+            clean = fn
+        }
+
+        let effectFn = effect(getter, {
+            lazy: true,
+            scheduler() {
+                newVal = effectFn()
+                if (clean) {
+                    clean()
+                }
+                callback(newVal, oldVal, onCleanup)
+                oldVal = newVal
+            }
+        })
+
+        function traverse(source, seen = new Set()) {
+            if (typeof (source) !== 'object' || source === null || seen.has(source)) return
+            seen.add(source)
+            for (let key in source) {
+                traverse(source[key], source)
+            }
+            return source
+        }
+        function job() {
+            newVal = effectFn()
+            callback(newVal, oldVal)
+            oldVal = newVal
+        }
+        oldVal = effectFn()
+    }
+    setTimeout(() => {
+        data.name = 'qing yun'
+    }, 1000)
+    setTimeout(() => {
+        data.age = 99
+    }, 2000)
+    setTimeout(() => {
+        data.name = 'iiiiii'
+    }, 4000)
+    console.log('=bucket>', bucket)
+</script>
+
+</html>
