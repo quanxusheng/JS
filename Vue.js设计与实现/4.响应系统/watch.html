@@ -134,10 +134,17 @@
         // data, // newVal, oldVal值是同一个，指向同一个引用地址
         () => data.name,
         // () => data.name + data.age,
-        (newVal, oldVal) => {
+        (newVal, oldVal, onCleanup) => {
             console.log('=>newVal', newVal)
             console.log('=>oldVal', oldVal)
-            document.body.innerText = `${newVal}   ${oldVal}`
+            let clear = false
+            onCleanup(() => {
+                clear = true
+            })
+            if (!clear) {
+                document.body.innerText = `${newVal}   ${oldVal}`
+            }
+
         },
         {
             immediate: true
@@ -189,13 +196,13 @@
     }
     setTimeout(() => {
         data.name = 'qing yun'
-    }, 1000)
+    }, 5000)
     setTimeout(() => {
         data.age = 99
     }, 2000)
     setTimeout(() => {
         data.name = 'iiiiii'
-    }, 4000)
+    }, 2000)
     console.log('=bucket>', bucket)
 </script>
 
