@@ -16,10 +16,10 @@ export type movePositionType = {
 
 // 裁剪框位置参数
 export type positionInfoType = {
-  startX: number;
-  startY: number;
-  width: number;
-  height: number;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
 };
 
 // 裁剪框缩放时所返回的数据类型

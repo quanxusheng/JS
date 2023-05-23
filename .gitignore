@@ -3,6 +3,7 @@ unpackage/
 dist/dev/
 dist/build/
 project.private.config.json
+screen-shot-master
 
 # local env files
 .env.local
