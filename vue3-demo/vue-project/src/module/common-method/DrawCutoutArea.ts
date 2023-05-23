@@ -12,19 +12,30 @@ export default function drawCutoutArea(
     y: number,
     w: number,
     h: number,
-    context: any,
-    screenShortController: any
+    context: CanvasRenderingContext2D,
+    screenShortController: any,
+    borderSize: number
 ) {
     const { width, height } = screenShortController;
+    const size = borderSize
+    const half = size / 2
     context.clearRect(0, 0, width, height);
 
     context.fillStyle = "rgba(0, 0, 0, 0.6)";
     context.fillRect(0, 0, width, height);
     // context.save()
     context.clearRect(x, y, w, h);
+    context.globalCompositeOperation = 'source-over'
+    context.fillStyle = "#e1ff06";
+    
+    // context.arc(x, y, 5, 0, 2 * Math.PI) // 暂未实现圆形点
 
-    context.fillStyle = "#000000";
-    context.fillRect(x, y);
+    context.fillRect(x - half, y - half, size, size);
+    context.fillRect(x + w - half, y - half, size, size)
+    context.fillRect(x + w - half, y + h - half, size, size)
+    context.fillRect(x - half, y + h - half, size, size)
+
+    context.fillRect(x + (w - x) / 2, y + h - half, size, size)
 
     return {
         x,

@@ -125,7 +125,7 @@ export default class EventMonitoring {
         canvasContext: CanvasRenderingContext2D,
         screenShortController: HTMLCanvasElement
     ) {
-        this.screenShortCanvas = canvasContext;
+        this.screenShortCanvas = canvasContext
         this.drawMasking(
             canvasContext,
             screenShortController.width,
@@ -152,10 +152,11 @@ export default class EventMonitoring {
 
     mouseMoveEvent = (e: MouseEvent) => {
         // console.log('=>mouseMoveEvent', e)
-
+        
         if (this.mouseDraging) {
             // console.log('=>mouseMoveEvent', e)
 
+            if (!this.screenShortCanvas) return
             // 绘制裁剪区域
             const { x, y } = this.mouseBeginClick;
             console.log("=>mouseBeginClick", x, y);
@@ -168,7 +169,8 @@ export default class EventMonitoring {
                 tempW,
                 tempH,
                 this.screenShortCanvas,
-                this.screenShortController
+                this.screenShortController,
+                this.borderSize
             );
 
             // 绘制裁剪框
