@@ -8,7 +8,32 @@ function saveBorderArrInfo(
     borderSize: number,
     positionInfo: positionInfoType
 ) {
-    console.log('=>', 1)
+    console.log('=>borderSize', borderSize)
+    console.log('=>positionInfo', positionInfo)
+    const half = borderSize / 2
+    const {x, y, w, h} = positionInfo
+
+    const arr = []
+
+    // 内框 拖拽操作
+    arr[0] = {
+        x: x - half,
+        y: y + half,
+        w: half,
+        h: half,
+        index: 1,
+        option: 1
+    }
+
+    // 西北角拉伸
+    arr[0] = {
+        x: x - half,
+        y: y + half,
+        w: half,
+        h: half,
+        index: 1,
+        option: 1
+    }
 }
 
 export  {

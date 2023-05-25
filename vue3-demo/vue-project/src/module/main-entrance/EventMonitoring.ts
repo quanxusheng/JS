@@ -1,17 +1,12 @@
 import { ref, Ref, onMounted, onUnmounted } from "vue";
 import InitData from "@/module/main-entrance/InitData";
 import PlugInParameters from "@/module/main-entrance/PlugInParameters";
-import saveBorderDot from "@/module/common-method/SaveBorderInfo";
+// import saveBorderDot from "@/module/common-method/SaveBorderInfo";
 import drawCutoutArea from "@/module/common-method/DrawCutoutArea";
 import { saveBorderArrInfo } from "@/module/common-method/saveBorderArrInfo";
 import html2canvas from "html2canvas";
 import { cutOutBoxBorder, positionInfoType } from "@/module/type/ComponentType";
 
-if (true) {
-    import('@/module/common-method/test').then(res => {
-        console.log('=>', res)
-    })
-}
 const screenShortController = ref<HTMLCanvasElement | null>(null);
 export default class EventMonitoring {
     private readonly data: InitData;
@@ -144,7 +139,7 @@ export default class EventMonitoring {
         screenShortController.addEventListener(
             "mousemove",
             this.mouseMoveEvent
-        );
+        )
         screenShortController.addEventListener("mouseup", this.mouseUpEvent);
     }
 
