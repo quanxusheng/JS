@@ -1,4 +1,4 @@
-import { ref, Ref, onMounted, onUnmounted } from "vue";
+import { ref, Ref, onMounted, onUnmounted, nextTick } from "vue";
 import InitData from "@/module/main-entrance/InitData";
 import PlugInParameters from "@/module/main-entrance/PlugInParameters";
 // import saveBorderDot from "@/module/common-method/SaveBorderInfo";
@@ -6,11 +6,14 @@ import drawCutoutArea from "@/module/common-method/DrawCutoutArea";
 import { saveBorderArrInfo } from "@/module/common-method/saveBorderArrInfo";
 import html2canvas from "html2canvas";
 import { cutOutBoxBorder, positionInfoType } from "@/module/type/ComponentType";
+import { calculateToolLocation } from "@/module/split-methods/CalculateToolLocation";
 
 const screenShortController = ref<HTMLCanvasElement | null>(null);
 export default class EventMonitoring {
     private readonly data: InitData;
     clickCutFullScreen = false;
+      // 截图工具栏dom
+    private toolController: Ref<HTMLDivElement | null>;
     wrcWindowMode = false;
     screenShortImageController: HTMLCanvasElement;
     videoController: HTMLVideoElement;
@@ -22,6 +25,7 @@ export default class EventMonitoring {
         x: 0,
         y: 0
     };
+    private dpr = window.devicePixelRatio || 1;
     cutoutBoxBorderArr: Array<cutOutBoxBorder> = [];
     borderSize = 10;
     tempCutoutBoxInfo: positionInfoType = {
@@ -30,11 +34,29 @@ export default class EventMonitoring {
         w: 0,
         h: 0
     };
-
+      // 图形位置参数
+    private drawGraphPosition: positionInfoType = {
+        x: 0,
+        y: 0,
+        w: 0,
+        h: 0
+    };
+    // 临时图形位置参数
+    private tempGraphPosition: positionInfoType = {
+        x: 0,
+        y: 0,
+        w: 0,
+        h: 0
+    };
+      // 截全屏时工具栏展示的位置要减去的高度
+    private fullScreenDiffHeight = 60;
+      // 全屏截取状态
+    private getFullScreenStatus = false;
     constructor() {
         this.data = new InitData();
         // this.screenShortController = this.data.getScreenShortController()
         this.screenShortController = screenShortController.value;
+        this.toolController = this.data.getToolController();
 
         this.screenShortImageController = document.createElement("canvas");
         this.videoController = document.createElement("video");
@@ -193,20 +215,61 @@ export default class EventMonitoring {
             this.borderSize,
             this.tempCutoutBoxInfo
         )
-        // const { x, y } = this.mouseBeginClick
-        // console.log('=>mouseBeginClick', x , y)
-        // console.log('=>mouseUpEvent', e.x , e.y)
-        // this.mouseDraging = false
-        // const tempW = e.x - x
-        // const tempH = e.y - y
-        // this.drawCutOutBox(
-        //     x,
-        //     y,
-        //     tempW,
-        //     tempH,
-        //     this.screenShortCanvas,
-        //     this.screenShortController
-        // )
+        console.log('=>this.screenShortController.value', this.screenShortController)
+        this.screenShortController.style.cursor = 'move'
+        this.data.setToolStatus(true);
+
+        nextTick().then(() => {
+        if (
+          this.toolController.value != null &&
+          this.screenShortController.value
+        ) {
+          // 计算截图工具栏位置
+          const toolLocation = calculateToolLocation(
+            this.drawGraphPosition,
+            this.toolController.value?.offsetWidth,
+            this.screenShortController.value.width / this.dpr
+          );
+          // 当前截取的是全屏，则修改工具栏的位置到截图容器最底部，防止超出
+        //   if (this.getFullScreenStatus) {
+        //     const containerHeight = parseInt(
+        //       this.screenShortController.value.style.height
+        //     );
+        //     // 重新计算工具栏的x轴位置
+        //     const toolPositionX =
+        //       (this.drawGraphPosition.width / this.dpr -
+        //         this.toolController.value.offsetWidth) /
+        //       2;
+        //     toolLocation.mouseY = containerHeight - this.fullScreenDiffHeight;
+        //     toolLocation.mouseX = toolPositionX;
+        //   }
+
+          if (this.screenShortController.value) {
+            const containerHeight = parseInt(
+              this.screenShortController.value.style.height
+            );
+
+            // 工具栏的位置超出截图容器时，调整工具栏位置防止超出
+            if (toolLocation.mouseY > containerHeight - 64) {
+              toolLocation.mouseY -= this.drawGraphPosition.h + 64;
+
+              // 超出屏幕顶部时
+              if (toolLocation.mouseY < 0) {
+                const containerHeight = parseInt(
+                  this.screenShortController.value.style.height
+                );
+                toolLocation.mouseY =
+                  containerHeight - this.fullScreenDiffHeight;
+              }
+            }
+          }
+
+          // 设置截图工具栏位置
+          this.data.setToolInfo(toolLocation.mouseX, toolLocation.mouseY);
+          // 状态重置
+          this.getFullScreenStatus = false;
+        }
+      });
     };
 
     opreteingCutoutBoxBorder = (
