@@ -24,3 +24,4 @@ yarn-error.log*
 *.sln
 *.sw*
 .hbuilderx/launch.json
+vue3-demo/screen-shot

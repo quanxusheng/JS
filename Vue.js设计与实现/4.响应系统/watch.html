@@ -131,7 +131,7 @@
         return effectFn
     }
     watch(
-        // data, // newVal, oldVal值是同一个，指向同一个引用地址
+        // 参数如果是对象, 那么newVal, oldVal值是同一个，指向同一个引用地址
         () => data.name,
         // () => data.name + data.age,
         (newVal, oldVal, onCleanup) => {

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>响应式原理</title>
+</head>
+<body>
+    
+</body>
+<script>
+        let data = {
+            name: '鲸鱼',
+            age: 18,
+            ok: true
+        }
+
+        let obj = new Proxy(data, {
+            get(target, key, receiver) {
+                track(target, key)
+                return Reflect.get(target, key)
+            },
+            set(target, key, newValue, reciver) {
+                if (target[key] === newValue) return
+                Reflect.set(target, key, newValue)
+                trigger(target, key)
+                return true
+            }
+        })
+        function track(target, key) {
+            if (!activeEffect) return
+            let targetMap = bucket.get(target)
+            if (!targetMap) {
+                bucket.set(target, targetMap = new Map())
+            }
+            let deps = targetMap.get(key)
+            if (!deps) {
+                targetMap.set(key, deps = new Set())
+            }
+            deps.add(activeEffect)
+            activeEffect.deps.push(deps)
+        }
+        
+        function trigger(target, key) {
+            console.log('=>target', target)
+            console.log('=>key', key)
+            let targetMap = bucket.get(target)
+            if (!targetMap) return
+            let deps = targetMap.get(key)
+            if (!deps) return
+            console.log('=>deps', deps)
+            deps.forEach(eff => {
+                eff()
+            })
+        }
+
+        // 分支切换后清除无效的依赖
+        function cleanup(effectFn) {
+            effectFn
+        }
+
+        let activeEffect
+        let bucket = new WeakMap()
+
+        function effect(fn) {
+            const effectFn = () => {
+                cleanup(effectFn)
+                activeEffect = effectFn
+                let res = fn()
+                ectiveEffect = null
+                return res
+            }
+            effectFn.deps = []
+            return effectFn()
+        }
+
+        effect(
+            () => {
+                document.body.innerHTML = obj.ok ? obj.name : 'quan'
+            }
+        )
+
+        setTimeout(() => {
+            obj.ok = false
+            // obj.name = 'alex'
+        }, 2000)
+        setTimeout(() => {
+            obj.name = 'alex'
+        }, 3000)
+
+        
+
+        // let fullName = computed(() => {
+        //     document.body.innerText = obj.name + obj.age
+        //     // return obj.name + obj.age
+        // })
+        // console.log('=>fullName', fullName)
+        // function computed(fn) {
+        //     const res = effect(fn)
+        //     console.log('=>res', res)
+
+
+
+        //     return res
+        // }
+
+        console.log('=>bucket', bucket)
+    </script>
+</html>

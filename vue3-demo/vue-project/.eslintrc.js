@@ -18,6 +18,7 @@ module.exports = {
     "prettier"
   ],
   rules: {
+    "no-extra-semi": "never",
     "no-console": process.env.NODE_ENV === "production" ? "warn" : "off",
     "no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off",
     "prettier/prettier": "error", // prettier标记的地方抛出错误信息

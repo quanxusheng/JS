@@ -17,25 +17,28 @@ export default function drawCutoutArea(
     borderSize: number
 ) {
     const { width, height } = screenShortController;
-    const size = borderSize
-    const half = size / 2
+    const size = borderSize;
+    const half = size / 2;
     context.clearRect(0, 0, width, height);
 
     context.fillStyle = "rgba(0, 0, 0, 0.6)";
     context.fillRect(0, 0, width, height);
     // context.save()
     context.clearRect(x, y, w, h);
-    context.globalCompositeOperation = 'source-over'
+    context.globalCompositeOperation = "source-over";
     context.fillStyle = "#e1ff06";
-    
+
     // context.arc(x, y, 5, 0, 2 * Math.PI) // 暂未实现圆形点
 
-    context.fillRect(x - half, y - half, size, size);
+    context.fillRect(x - half, y - half, size, size)
     context.fillRect(x + w - half, y - half, size, size)
     context.fillRect(x + w - half, y + h - half, size, size)
     context.fillRect(x - half, y + h - half, size, size)
 
-    context.fillRect(x + (w - x) / 2, y + h - half, size, size)
+    context.fillRect(x + w / 2, y - half, size, size)
+    context.fillRect(x + w - half, y + h / 2, size, size)
+    context.fillRect(x + w / 2, y + h - half, size, size)
+    context.fillRect(x - half, y + h / 2, size, size)
 
     return {
         x,
