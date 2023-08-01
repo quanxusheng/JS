@@ -1,12 +1,10 @@
-let arr = ['aa', 'bb']
+var obj = {
+    a: 111,
+}
+var obj2 = {
+    a: 111,
+}
 
-let key = ''
-Object.defineProperty(arr, 0, {
-  get() {
-    return key
-  },
-  set(newval) {
-    key = newval
-  }
-})
-arr[0] = 'ccc'
+var s = new WeakMap()
+s.set(obj, obj)
+console.log('=>sss', s)

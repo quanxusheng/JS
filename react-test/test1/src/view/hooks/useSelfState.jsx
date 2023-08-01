@@ -13,6 +13,7 @@ function UseSelfState(state) {
     }
 
     const dispathCount = (() => {
+        console.log('_index', _index)
         let _callIndex = _index
         return newState => {
             _index = 0
