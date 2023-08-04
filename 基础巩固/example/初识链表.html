@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <script>
+    /* 
+      LinkList: {
+        head: {
+            data: 10,
+            next: {
+              data: 11,
+              next: {
+                data: 12,
+                next: {
+                  data: 13,
+                  next: null
+                }
+              }
+            }
+          }
+        }
+      */
+    class Node {
+      constructor(data) {
+        this.data = data
+        this.next = null
+      }
+    }
+
+    class LinkList {
+      constructor() {
+        this.head = null
+      }
+
+      // 链表头部添加节点
+      addAtHead(data) {
+        const node = new Node(data)
+        node.next = this.head
+        this.head = node
+      }
+
+      // 链表尾部添加节点
+      addAtTail(data) {
+        const node = new Node(data)
+        if (!this.head) {
+          this.head = node
+          return
+        }
+        let current = this.head
+        while(current.next) {
+          current = current.next
+        }
+        current.next = node
+      }
+
+      //删除某个节点
+      removeNode(data) {
+        if (!this.head) return
+        if (this.head.data === data) {
+          this.head = null
+          return
+        }
+
+        let current = this.head
+        while(current.next) {
+          if (current.next.data === data) {
+            console.log('=>current', current)
+            console.log('=>current22', current.next)
+            current.next = current.next.next
+            console.log('=>333', current)
+            return
+          }
+          current = current.next
+        }
+      }
+
+
+      // 反转链表
+      reverse() {
+        let prev = null
+        let current = this.head
+        while(current) {
+          const next = current.next
+          console.log('=>prev', prev)
+          current.next = prev
+          prev = current
+          current = next
+        }
+        this.head = prev
+      }
+    }
+
+    const chain = new LinkList()
+
+    chain.addAtHead(11)
+    chain.addAtHead(22)
+    chain.addAtHead(33)
+    chain.addAtTail(55)
+    chain.addAtTail(99)
+    // console.log('=>', chain)
+    // chain.removeNode(55)
+    chain.reverse()
+    console.log('=>', chain)
+
+
+
+
+
+  </script>
+</body>
+</html>
