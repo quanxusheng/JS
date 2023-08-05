@@ -1,4 +1,6 @@
+const sub = require('./sub')
 const name = 'alex'
 
-// export default name
+console.log('=>sub', sub)
+
 module.exports = name
