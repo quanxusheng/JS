@@ -67,18 +67,36 @@ class Compiler {
         }
     }
 
-    // 开始编译
+    // 4. 开始编译, 执行Compiler对象的run方法开始执行编译
     run(callback) {
-        this.hooks.run.call()
-        const onCompiled = () => {
+        this.hooks.run.call() // 在编译前出发run钩子执行，表示开始启动编译了
+        const onCompiled = (err, stats, fileDependencies) => {
+            // 10. 确定好输出内容之后，根据配置的输出路径和文件名，将文件内容写入到文件系统 硬盘
+            // console.log('=>stats', stats)
+            for (let filename in stats.assets) {
+                let filePath = path.join(this.webpackOptions.output.path, filename)
+                fs.writeFileSync(filePath, stats.assets[filename], 'utf8')
+            }
+
+            callback(err, {
+                toJson: () => stats,
+            })
+            // console.log('=>fileDependencies', Array.from(new Set(fileDependencies)))
+            Array.from(new Set(fileDependencies)).forEach(fileDep => {
+                fs.watch(fileDep, () => this.compile(onCompiled))
+            })
+
             this.hooks.done.call()
         }
         this.compile(onCompiled)
     }
 
     compile(callback) {
+        // 虽然webpack只有一个Compiler，但是每次编译都会产生一个新的Compilation
+        // 这里主要是为了考虑watch模式，它会在启动时先编译一次，然后监听文件变化，如果发生变化会重新开始编译
+        // 每次编译都会产出一个新的Compilation，代表每次的编译结果
         const compilation = new Compilation(this.webpackOptions)
-        compilation.build(callback)
+        compilation.build(callback) // 执行compilation的build方法进行编译，编译成功之后执行回调
     }
 }
 
@@ -223,7 +241,7 @@ class Compilation {
         })
 
         // 7.10 等依赖模块全部编译完成后，返回入口模块的 module 对象
-        console.log('=>module', module)
+        // console.log('=>module', module)
         return module
     }
 }
