@@ -20,3 +20,5 @@ react中组件的渲染
 
 state 如同一次快照
   -每次state的变更，会重新生成一个渲染函数并把变更的state值传进去
+
+flushSync() 同步更新dom

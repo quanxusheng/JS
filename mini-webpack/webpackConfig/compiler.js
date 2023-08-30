@@ -69,7 +69,7 @@ class Compiler {
 
     // 4. 开始编译, 执行Compiler对象的run方法开始执行编译
     run(callback) {
-        this.hooks.run.call() // 在编译前出发run钩子执行，表示开始启动编译了
+        this.hooks.run.call() // 在编译前触发run钩子执行，表示开始启动编译了
         const onCompiled = (err, stats, fileDependencies) => {
             // 10. 确定好输出内容之后，根据配置的输出路径和文件名，将文件内容写入到文件系统 硬盘
             // console.log('=>stats', stats)
@@ -140,7 +140,7 @@ class Compilation {
             let chunk = {
                 name: entryName, // entryName='main' 代码块的名称
                 entryModule, // 此代码块对应的module的对象，这里就是 src/index.js 的module对象
-                modules: this.modules.filter(item => item.names.includes(entryName)), //找出属于改代码块的模块
+                modules: this.modules.filter(item => item.names.includes(entryName)), //找出属于该代码块的模块
             }
             this.chunks.push(chunk)
         }
@@ -152,6 +152,11 @@ class Compilation {
         })
 
         // 编译完成执行callback
+        // console.log('=>this.chunks', this.chunks)
+        // console.log('=>this.chunks', this.chunks[0].entryModule.names)
+        // console.log('=>this.chunks', this.chunks[0].modules)
+        // console.log('=>this.modules', this.modules)
+        // console.log('=>this.chunks', this.chunks)
         callback(
             null,
             {
@@ -198,6 +203,7 @@ class Compilation {
             CallExpression: nodePath => {
                 // console.log('=>nodePath', nodePath)
                 const { node } = nodePath
+                // console.log('=>', node.callee)
                 if (node.callee.name === 'require') {
                     let depModuleName = node.arguments[0].value // 获取依赖的模块
                     let dirname = path.posix.dirname(modulePath) // 获取当前正在编译模块所在目录

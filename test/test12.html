@@ -7,33 +7,12 @@
   <title>Document</title>
 </head>
 <body>
-  <script>
-    let obj = {
-     async  run(callback) {
-        const body = {
-          type: 'success',
-          message: '请求成功'
-        }
-        const payload = {
-          age: 990,
-          name: 'jingyu'
-        }
-        const promise = await new Promise((res, rej) => {
-          setTimeout(() => {
-            res(callback(body, payload))
-            // res()
-            
-          }, 3000);
-        })
-        console.log('=>promise', promise)
-        // callback(body, payload)
-      }
-    }
-    obj.run((name, age) => {
-      console.log('=>runrun', name)
-      console.log('=>runrun', age)
-      return age.name
-    })
-  </script>
+  <div style="height: 100px;width: 200px;background: red;">
+    <div class="sub" style="width: 50%;height: inherit;background-color: inherit;">22</div>
+  </div>
 </body>
+<script>
+  const dom = document.querySelector('.sub')
+  console.log('=>', getComputedStyle(dom))
+</script>
 </html>

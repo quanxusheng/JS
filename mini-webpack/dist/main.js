@@ -2,16 +2,14 @@
       (() => {
         var modules = {
           
-            "./src/sub.js": (module) => {
-              module.exports = 'subsub.js';
+            "./src/name.js": (module) => {
+              const name = 'alex';
+module.exports = name;
 aaaloader1的注视;
             }
           ,
-            "./src/name.js": (module) => {
-              const sub = require("./src/sub.js");
-const name = 'alex';
-console.log('=>sub', sub);
-module.exports = name;
+            "./src/sub.js": (module) => {
+              module.exports = 'aaa';
 aaaloader1的注视;
             }
           ,
@@ -25,8 +23,8 @@ aaaloader1的注视;
             "./src/index.js": (module) => {
               const name = require("./src/name.js");
 const age = require("./src/age.js");
-console.log('=>name', name);
 console.log('=>age', age);
+console.log('=>name', name);
 aaaloader1的注视;
             }
             
@@ -46,8 +44,8 @@ aaaloader1的注视;
         var exports ={};
         const name = require("./src/name.js");
 const age = require("./src/age.js");
-console.log('=>name', name);
 console.log('=>age', age);
+console.log('=>name', name);
 aaaloader1的注视;
       })();
  
