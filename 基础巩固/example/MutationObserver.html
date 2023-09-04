@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <div style="background: green;" class="green">green</div>
+  <div class="grid">
+
+  </div>
+  <script>
+    let dom = document.querySelector('.grid')
+    const config = {
+      attributes: true,
+      childList: true,
+      subTree: true
+    }
+
+    const callback = (n1, n2) => {
+      console.log('=>n1', n1)
+      console.log('=>n2', n2)
+    }
+    let observer = new MutationObserver(callback)
+    observer.observe(dom, config)
+    const domGreen = document.querySelector('.green')
+    dom.innerHTML = 'test'
+    dom.style.background = 'black'
+    dom.style.padding = '20px'
+    dom.append(domGreen)
+
+    const callback2 = (res) => {
+      console.log('=>document', res)
+    }
+    const documentOserver = new MutationObserver(callback2)
+    const targetDocument = document.body
+    documentOserver.observe(document, {attributes: true, childList: true, subtree: true})
+  </script>
+  <!-- <script>
+    console.log('=>', 11111)
+    setTimeout(() => {
+      console.log('=>setTimeout', 333)
+      new Promise(res => res()).then(() => {
+        console.log('=>Promise', 44)
+        setTimeout(() => {
+          console.log('=>', 888)
+        })
+      })
+      setTimeout(() => {
+        console.log('=>', 777)
+      })
+      console.log('=>', 555)
+    })
+     new Promise((res, rej) => {
+      res()
+    }).then(res => {
+      console.log('=>then', 'aaa')
+    })
+    requestIdleCallback((res) => {
+      console.log('=>requestIdleCallback', res)
+    }, {timeout: 2000})
+     new Promise((res, rej) => {
+      res()
+    }).then(res => {
+      console.log('=>then', 'bbb')
+    })
+    setTimeout(() => {
+      console.log('=>', 999)
+    })
+     new Promise((res, rej) => {
+      res()
+    }).then(res => {
+      console.log('=>then', 'ccc')
+    })
+    requestAnimationFrame(() => {
+      console.log('=>', 'requestAnimationFrame')
+    })
+    
+    new Promise((res, rej) => {
+      res()
+    }).then(res => {
+      console.log('=>then', 666)
+    })
+    console.log('=>', 8888)
+  </script> -->
+  <!-- <script>
+    console.log('=>', 2222)
+    new Promise(res => res()).then(() => {
+      console.log('=>Promise', 555)
+    })
+  </script> -->
+</body>
+</html>
