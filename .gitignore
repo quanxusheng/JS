@@ -4,6 +4,7 @@ dist/dev/
 dist/build/
 project.private.config.json
 screen-shot-master
+collect-project-copy
 
 # local env files
 .env.local
