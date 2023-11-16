@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>indexedDB</title>
+</head>
+<!-- <script src="https://cdn.jsdelivr.net/npm/idb@7/build/umd.js"></script> -->
+<script type='module'>
+    import { openDB, deleteDB, wrap, unwrap } from 'https://cdn.jsdelivr.net/npm/idb@7/+esm';
+    let sheetDB = null
+    const init = async ()=> {
+        sheetDB = await openDB('sheetDB', 1, {
+            upgrade(db) {
+                // db.createObjectStore('data')
+                db.createObjectStore('data', {keyPath: 'version'})
+            }
+        })
+    }
+    init()
+    
+    const demo1 = document.querySelector('.demo1')
+    demo1.onclick = async (e) => {
+        // console.log('=>eeee', e)
+        console.log('=>sheetDB', sheetDB)
+        // sheetDB.put('data',
+        //     {
+        //         id: 1345345345,
+        //         version: 4,
+        //         sheetName: '表格1',
+        //         data: {
+        //             row: [1,2,3]
+        //         }
+        //     }
+        // )
+        // await sheetDB.delete('data')
+        // await sheetDB.delete('data', 'version')
+        const ts = await sheetDB.transaction('data', 'readwrite')
+        console.log('=>ts', ts)
+        // await ts.objectStore('data').delete(4)
+        window.indexedDB.deleteDatabase('sheetDB')
+
+        console.log('=>', await sheetDB.getAll('data'))
+    }
+    </script>
+<body>
+    <div>
+        <button class='demo1'>demo1</button>
+    </div>
+</body>
+</html>

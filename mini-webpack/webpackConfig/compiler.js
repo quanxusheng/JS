@@ -11,7 +11,12 @@ const baseDir = toUnixPath(process.cwd())
 function toUnixPath(filePath) {
     return filePath.replace(/\\/g, '/')
 }
+/*
+=>process.cwd() E:\JS\mini-webpack
+=> E:\JS\mini-webpack\webpackConfig
+ */
 // console.log('=>process.cwd()', process.cwd())
+// console.log('=>', path.resolve(__dirname))
 
 // 获取文件路径
 function tryExtensions(modulePath, extensions) {
@@ -69,6 +74,7 @@ class Compiler {
 
     // 4. 开始编译, 执行Compiler对象的run方法开始执行编译
     run(callback) {
+        console.log('=>', 'run执行了')
         this.hooks.run.call() // 在编译前触发run钩子执行，表示开始启动编译了
         const onCompiled = (err, stats, fileDependencies) => {
             // 10. 确定好输出内容之后，根据配置的输出路径和文件名，将文件内容写入到文件系统 硬盘
@@ -148,6 +154,7 @@ class Compilation {
         // 9 把各个代码块 chunk 转换成一个一个文件加入到输出列表
         this.chunks.forEach(chunk => {
             let filename = this.webpackOptions.output.filename.replace('[name]', chunk.name)
+            console.log('=>filename', filename)
             this.assets[filename] = getSource(chunk)
         })
 
@@ -171,7 +178,11 @@ class Compilation {
     buildModule(name, modulePath) {
         // 6.2.1 读取模块内容 获取源代码
         let sourceCode = fs.readFileSync(modulePath, 'utf-8')
+        // console.log('=>sourceCode', sourceCode)
         let moduleId = './' + path.posix.relative(baseDir, modulePath)
+        // console.log('=baseDir>', baseDir)
+        // console.log('=modulePath>', modulePath)
+        // console.log('=moduleId>', moduleId)
 
         // 6.2.2 创建模块对象
         let module = {
@@ -195,7 +206,8 @@ class Compilation {
             return loader(code)
         }, sourceCode)
 
-        // 通过Loader翻译后的内容一定得是js内容，因为最后走我们的babel/parse，只有js才能编译成AST
+        // console.log('=>', moduleId, module, sourceCode)
+
         // 第七步： 找出此模块所依赖的模块，再对依赖模块进行编译
         let ast = parser.parse(sourceCode, { sourceType: 'module' })
         // console.log('=>ast', ast)

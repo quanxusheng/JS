@@ -11,22 +11,52 @@
 </body>
 <script>
 
+function getNum1() {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            console.log('=>', 111)
+            resolve()
+        }, 2000)
+        resolve()
+    })
+}
+function getNum2() {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            console.log('=>', 222)
+            resolve()
+        }, 3000)
+    })
+}
+function getNum3() {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            console.log('=>', 333)
+            resolve()
+        }, 1000)
+    })
+}
 
-  function *run(name) {
-    const n = yield `xiao ${name}`
-    return n
-  }
-  let fn = run('quan')
-  let a = fn.next()
-  console.log('=>', fn)
-  console.log('=>', a)
-  console.log('=>', a.value)
+// getNum1()
+// getNum2()
+// getNum3()
 
-  let a2 = fn.next('zhao')
-  let a3 = run('zhao')
-  console.log('=>', a2)
-  console.log('=>', a2.value)
-  console.log('=>', a3.next().value)
+    let run = function* () {
+        getNum1()
+        yield;
+        getNum2()
+        yield;
+        getNum3()
+        return 1
+    }()
+    run.next()
+    // run.next()
+    // run.next()
+    // console.log('=>run', run)
+    // console.log('=>run', run.next())
+    // console.log('=>run', run.next())
+    // console.log('=>run', run.next())
+    // console.log('=>last', run)
 
 </script>
 </html>

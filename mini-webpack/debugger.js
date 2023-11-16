@@ -1,7 +1,10 @@
 // const { webpack } = require('webpack')
 const { webpack } = require('./webpackConfig/webpack')
 const webpackConfig = require('./webpack.config')
+
+// 1.0
 const compiler = webpack(webpackConfig)
+// console.log('=>compiler11', compiler)
 
 compiler.run((err, stats) => {
     // console.log('=>', err)

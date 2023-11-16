@@ -4,7 +4,7 @@ import './App.css'
 // import Test4 from './Test4'
 // import Test5 from './Test5'
 // import Count from './Count'
-import Counter from './features/counter/Counter'
+// import Counter from './features/counter/Counter'
 
 function App() {
     return (
@@ -14,7 +14,7 @@ function App() {
             {/* <Test5 /> */}
             {/* <Test4 /> */}
             {/* <Count /> */}
-            <Counter />
+            {/* <Counter /> */}
         </div>
     )
 }

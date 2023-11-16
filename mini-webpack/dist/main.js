@@ -15,6 +15,7 @@ aaaloader1的注视;
           ,
             "./src/age.js": (module) => {
               const sub = require("./src/sub.js");
+// import sub1 from './sub'
 const age = 99;
 module.exports = age;
 aaaloader1的注视;

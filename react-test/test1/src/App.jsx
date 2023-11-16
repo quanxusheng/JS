@@ -1,8 +1,9 @@
 import './App.css'
 // import Counter from './view/Counter';
-import Counter2 from './view/Counter2'
+// import Counter2 from './view/Counter2'
 // import Test1 from './view/Test1.jsx'
 // import Test2 from './view/Test2.jsx'
+import Test3 from './view/Test3.jsx'
 // import TravelPlan from './view/TravelPlan.jsx'
 // import GetData from './view/GetData'
 
@@ -13,7 +14,8 @@ function App() {
             {/* <Test2/> */}
             {/* <TravelPlan/> */}
             {/* <GetData/> */}
-            <Counter2 />
+            {/* <Counter2 /> */}
+            <Test3 />
         </div>
     )
 }
