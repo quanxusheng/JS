@@ -29,6 +29,24 @@ reconciler 更新工作从递归变成了可以中断循环的过程，每次循
 
 reconciler和renderer不再交替工作，schduler把任务交给reconciler之后，reconciler会把所有组件变化对应的虚拟dom打上标记，renderer会根据被标记完的虚拟dom，同步执行对应的dom操作
 
+Fiber 是虚拟dom的一种
+Fiber
+ - 保存着最小单元 React element 的信息，组件的类型，对应的dom节点信息
+ - 元素的hooks的状态，commit阶段需要执行的标记
+    return 父级fiber
+    child 子fiber
+    sibing 右边第一个兄弟fiber
+## 双缓存
+react中会存在两棵Fiber树
+workInProgress Fiber 构建在内存中的
+current Fiber 屏幕中显示的
+
+workInProgressFiber.alternate = currentFiber
+currentFiber.alternate = workInProgressFiber
+
+以alternate属性为桥梁，页面变化时就用在内存中生成的workInProgressFiber替换页面显示的currentFiber，以避免下一帧绘制时间过长可能造成白屏的问题
+
+
 
 
 
