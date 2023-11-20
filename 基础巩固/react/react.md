@@ -40,11 +40,117 @@ Fiber
 react中会存在两棵Fiber树
 workInProgress Fiber 构建在内存中的
 current Fiber 屏幕中显示的
+diff算法的本质就是对比currentFiber和更新后的jsx转换后的fiber，然后生成workInProgressFiber
 
 workInProgressFiber.alternate = currentFiber
 currentFiber.alternate = workInProgressFiber
 
 以alternate属性为桥梁，页面变化时就用在内存中生成的workInProgressFiber替换页面显示的currentFiber，以避免下一帧绘制时间过长可能造成白屏的问题
+
+
+
+## diff算法
+ 降低diff算法的复杂度，预设了3个限制
+1.只对同级元素进行diff
+2.前后两次更新中，元素的类型发生了变化，由div变成了p，那么会销毁div及其子孙元素，新建p及其子孙节点
+3.通过 ‘key prop’来暗示哪些子元素在不同的渲染中保持稳定，例如：
+```jsx
+// 更新前
+<div>
+  <p key="ka">ka</p>
+  <h3 key="song">song</h3>
+</div>
+
+// 更新后
+<div>
+  <h3 key="song">song</h3>
+  <p key="ka">ka</p>
+</div>
+```
+
+先判断是否存在child节点 - 再判断key是否相同 k不同fiber直接标记删除，然后和下一个fiber比较 - key相同，再判断type是否相同，type不同直接卸载元素及其子孙元素 - 若相同则可以复用dom节点
+
+```javascript
+function reconcileSingleElement(
+  returnFiber: Fiber,
+  currentFirstChild: Fiber | null,
+  element: ReactElement
+): Fiber {
+  const key = element.key;
+  let child = currentFirstChild;
+  
+  // 首先判断是否存在对应DOM节点
+  while (child !== null) {
+    // 上一次更新存在DOM节点，接下来判断是否可复用
+
+    // 首先比较key是否相同
+    if (child.key === key) {
+
+      // key相同，接下来比较type是否相同
+
+      switch (child.tag) {
+        // ...省略case
+        
+        default: {
+          if (child.elementType === element.type) {
+            // type相同则表示可以复用
+            // 返回复用的fiber
+            return existing;
+          }
+          
+          // type不同则跳出switch
+          break;
+        }
+      }
+      // 代码执行到这里代表：key相同但是type不同
+      // 将该fiber及其兄弟fiber标记为删除
+      deleteRemainingChildren(returnFiber, child);
+      break;
+    } else {
+      // key不同，将该fiber标记为删除
+      deleteChild(returnFiber, child);
+    }
+    child = child.sibling;
+  }
+
+  // 创建新Fiber，并返回 ...省略
+}
+```
+
+oldFiber
+abcd
+
+newChildren
+dacb
+
+1. a -> d key不同，直接跳出循环
+2. oldFiber转为map { key: fiber }
+
+3. 遍历newChildren dacb
+4. key === 'd' 在oldFiber中存在
+5. oldIndex 3 > lastPlacedIndex 0  lastPlacedIndex = 3 d的位置不变
+
+6. 继续遍历 acb, key === 'a'在oldFiber存在，oldIndex = 0
+7. oldIndex 0 < lastPlacedIndex 3 a要往右移动 lastPlacedIndex = 3
+
+8. 继续遍历newChild cb key === 'c'在oldFiber存在 oldIndex = 2
+9. oldIndex 2 < lastPlacedIndex 3 c要往右移动 lastPlacedIndex = 3
+
+9. 继续遍历 b key === 'b'在oldFiber存在 b = 1
+10. oldIndex 1 < lastPlacedIndex 3 b往右移动
+本轮遍历结束
+尽量避免将节点从后面移动到前面的操作
+
+## 优先级
+export type PriorityLevel = 0 | 1 | 2 | 3 | 4 | 5;
+
+export const NoPriority = 0;
+export const ImmediatePriority = 1;
+export const UserBlockingPriority = 2;
+export const NormalPriority = 3;
+export const LowPriority = 4;
+export const IdlePriority = 5;
+
 
 
 
