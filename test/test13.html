@@ -10,37 +10,122 @@
     <div class='app'></div>
 </body>
 <script>
-    // const app = document.querySelector('.app')
-    // const child = document.createElement('span')
-    // // child.innerText = 'child'
-    // child.innerHTML = 'child'
-    // app.appendChild(child)
-    // const child2 = document.createElement('span')
-    // // child.innerText = 'child'
-    // child2.innerHTML = 'child2222'
-    // app.appendChild(child2)
+    // 定义链表节点类
+class Node {
+  constructor(data) {
+    this.data = data; // 节点数据
+    this.next = null; // 下一个节点的指针
+  }
+}
 
-    // const p = document.createElement('p')
-    // p.innerText = 'pppp'
-    // child.replaceWith(p)
+// 定义链表类
+class LinkedList {
+  constructor() {
+    this.head = null; // 链表头节点
+    this.tail = null; // 链表尾节点
+  }
 
-    // class Bar {
-    //     constructor() {
-    //         this.name = 'bar'
-    //         this.age = 18
-    //     }
-        
-    //     callme() {
-    //         console.log('=>callme', this.age)
-    //     }
-    // }
-    // const bar = new Bar().callme()
-    let str = ''
-        let app = document.querySelector('.app')
-        Array(3000).fill(0).forEach((_, i) => {
-            str += `<li>${i}</li>`
-            
-        })
-        app.innerHTML =str
+  // 在链表末尾添加节点
+  append(data) {
+    const newNode = new Node(data);
+
+    // 如果链表为空，将新节点设为头节点和尾节点
+    if (!this.head) {
+      this.head = newNode;
+      this.tail = newNode;
+    } else {
+      // 将新节点添加到链表末尾，并更新尾节点
+      this.tail.next = newNode;
+      this.tail = newNode;
+    }
+  }
+
+  // 在链表特定位置插入节点
+  insertAt(data, position) {
+    const newNode = new Node(data);
+
+    // 如果要插入的位置是链表的头部
+    if (position === 0) {
+      newNode.next = this.head;
+      this.head = newNode;
+    } else {
+      let current = this.head;
+      let prev = null;
+      let count = 0;
+
+      // 遍历链表找到要插入位置的节点
+      while (count < position && current) {
+        prev = current;
+        current = current.next;
+        count++;
+      }
+
+      // 如果找到了插入位置，将新节点插入链表中
+      if (count === position) {
+        prev.next = newNode;
+        newNode.next = current;
+      } else {
+        // 如果插入位置超出链表长度，则将新节点添加到链表末尾
+        this.append(data);
+      }
+    }
+  }
+
+  // 从链表中删除节点
+  remove(data) {
+    let current = this.head;
+    let prev = null;
+
+    // 遍历链表找到要删除的节点
+    while (current !== null) {
+      if (current.data === data) {
+        // 如果要删除的节点是头节点
+        if (current === this.head) {
+          this.head = current.next;
+        } else {
+          // 将前一个节点的 next 指针跳过当前节点，直接指向当前节点的下一个节点
+          prev.next = current.next;
+
+          // 如果要删除的节点是尾节点，则更新尾节点为前一个节点
+          if (current === this.tail) {
+            this.tail = prev;
+          }
+        }
+        return; // 删除完成，退出循环
+      }
+
+      prev = current;
+      current = current.next;
+    }
+  }
+
+  // 打印链表中的所有节点数据
+  print() {
+    let current = this.head;
+    const result = [];
+
+    while (current !== null) {
+      result.push(current.data);
+      current = current.next;
+    }
+
+    console.log(result.join(" -> "));
+  }
+}
+
+// 使用示例
+const linkedList = new LinkedList();
+
+linkedList.append(10); // 添加节点 10
+linkedList.append(20); // 添加节点 20
+linkedList.append(30); // 添加节点 30
+linkedList.print(); // 输出：10 -> 20 -> 30
+
+// linkedList.insertAt(15, 1); // 在位置 1 插入节点 15
+// linkedList.print(); // 输出：10 -> 15 -> 20 -> 30
+
+// linkedList.remove(20); // 删除节点 20
+// linkedList.print(); // 输出：10 -> 15 -> 30
+console.log('=>linkedList', linkedList)
 </script>
 </html>
