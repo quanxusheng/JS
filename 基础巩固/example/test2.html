@@ -10,24 +10,59 @@
     <div></div>
 </body>
 <script>
-    setTimeout(() => {
-        console.log('=>', 111)
-    }, 3000)
+    let obj = {
+        name: 'alex'
+    }
+    Object.defineProperty(obj, 'name', {
+        get(value) {
+            console.log('=>', value)
+            return value
+        },
+        set(value) {
+            console.log('=>', value)
+        }
+    })
+    console.log('=>', obj)
+    console.log('=>', obj.name)
+    // let arr = Array(10).fill('')
+    // arr.forEach((item, index) => {
+    //     arr.splice(index, 1)
+    //     console.log('=>', arr.splice(index, 1))
+    // })
+    // for(let i = 0; i< arr.length; i++){
+    //     arr = arr.splice(i, 1)
+    //     // console.log('=>', arr.splice(i, 1))
+    // }
 
-    setTimeout(() => {
-        console.log('=>', 222)
-    }, 2000)
+    // for(let i = arr.length - 1; i >= 0; i--){
+    //     // arr.splice(i, 1)
+    //     console.log('=>i', arr.splice(i, 1), i)
+    // }
+    // console.log('=>arr', arr)
+    // console.log('foo')
+    // console.log('baz')
+    // 应该在 baz 之后、bar 之前
+    // console.log('baz')
 
-  let promise = new Promise((resolve) => {
-    console.log('=>Promise', '333')
-    resolve(11)
-  }).then((res) => {
-      console.log('=>444', res)
 
-      document.querySelector('div').innerHTML = 'test'
+//     setTimeout(() => {
+//         console.log('=>', 111)
+//     }, 3000)
+
+//     setTimeout(() => {
+//         console.log('=>', 222)
+//     }, 2000)
+
+//   let promise = new Promise((resolve) => {
+//     console.log('=>Promise', '333')
+//     resolve(11)
+//   }).then((res) => {
+//       console.log('=>444', res)
+
+//       document.querySelector('div').innerHTML = 'test'
       
-      return res
-  })
+//       return res
+//   })
 
 //   console.log('=>', 777)
 
@@ -37,7 +72,7 @@
 //   })
 </script>
 
-<script>
+<!-- <script>
     console.log('=>', '555')
 
     setTimeout(() => {
@@ -51,6 +86,6 @@
     Promise.resolve().then(res => {
         console.log('=>777', 'promise4')
     })
-</script>
+</script> -->
 </html>
 
