@@ -5,6 +5,9 @@ setTimeout(function () {
     process.nextTick(function () {
         console.log('3') // 4 进入微任务队列 [3]
     })
+    setTimeout(() => {
+        console.log('=>', 99)
+    })
     new Promise(function (resolve) {
         console.log('4') // 3 同步代码执行执行 输出4
         resolve()
@@ -36,4 +39,5 @@ setTimeout(function () {
         console.log('12') // 6 进入微任务队列 [10, 12]
     })
 })
-// 1 7 6 8 2 4 3 5  9 11 10 12
+
+// 1 7 6 8 2 4 3 5 9 11 10 12 console.log('=>', 99)

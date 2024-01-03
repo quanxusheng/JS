@@ -12,33 +12,33 @@
 
   </div>
   <script>
-    let dom = document.querySelector('.grid')
-    const config = {
-      attributes: true,
-      childList: true,
-      subTree: true
-    }
+    // let dom = document.querySelector('.grid')
+    // const config = {
+    //   attributes: true,
+    //   childList: true,
+    //   subTree: true
+    // }
 
-    const callback = (n1, n2) => {
-      console.log('=>n1', n1)
-      console.log('=>n2', n2)
-    }
-    let observer = new MutationObserver(callback)
-    observer.observe(dom, config)
-    const domGreen = document.querySelector('.green')
-    dom.innerHTML = 'test'
-    dom.style.background = 'black'
-    dom.style.padding = '20px'
-    dom.append(domGreen)
+    // const callback = (n1, n2) => {
+    //   console.log('=>n1', n1)
+    //   console.log('=>n2', n2)
+    // }
+    // let observer = new MutationObserver(callback)
+    // observer.observe(dom, config)
+    // const domGreen = document.querySelector('.green')
+    // dom.innerHTML = 'test'
+    // dom.style.background = 'black'
+    // dom.style.padding = '20px'
+    // dom.append(domGreen)
 
-    const callback2 = (res) => {
-      console.log('=>document', res)
-    }
-    const documentOserver = new MutationObserver(callback2)
-    const targetDocument = document.body
-    documentOserver.observe(document, {attributes: true, childList: true, subtree: true})
+    // const callback2 = (res) => {
+    //   console.log('=>document', res)
+    // }
+    // const documentOserver = new MutationObserver(callback2)
+    // const targetDocument = document.body
+    // documentOserver.observe(document, {attributes: true, childList: true, subtree: true})
   </script>
-  <!-- <script>
+  <script>
     console.log('=>', 11111)
     setTimeout(() => {
       console.log('=>setTimeout', 333)
@@ -61,7 +61,7 @@
     requestIdleCallback((res) => {
       console.log('=>requestIdleCallback', res)
     }, {timeout: 2000})
-     new Promise((res, rej) => {
+    new Promise((res, rej) => {
       res()
     }).then(res => {
       console.log('=>then', 'bbb')
@@ -84,12 +84,16 @@
       console.log('=>then', 666)
     })
     console.log('=>', 8888)
-  </script> -->
-  <!-- <script>
-    console.log('=>', 2222)
-    new Promise(res => res()).then(() => {
-      console.log('=>Promise', 555)
-    })
-  </script> -->
+
+    // console.log('=>', 11111)
+    // console.log('=>', 11111)
+  </script>
+
+    <script>
+        console.log('=>', 2222)
+        new Promise(res => res()).then(() => {
+            console.log('=>Promise', 555)
+        })
+    </script>
 </body>
 </html>
