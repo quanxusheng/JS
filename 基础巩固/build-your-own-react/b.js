@@ -18,6 +18,8 @@
 
 const container = document.getElementById('root')
 let nextUnitOfWork = null
+let wipRoot = null
+let currentRoot = null
 const selfReact = {
     createElement,
     render,
@@ -127,12 +129,18 @@ function createTextElement(text) {
 
 // 2. render 将虚拟dom转换为真实dom
 function render(element, container) {
-    nextUnitOfWork = {
+    wipRoot = {
         dom: container,
         props: {
             children: [element],
         },
+        // 初始为null， 之后的更新和上次commit完成保存的fiber树建立连接
+        alternate: currentRoot,
     }
+
+    nextUnitOfWork = wipRoot
+
+    console.log('=>nextUnitOfWork', nextUnitOfWork)
 }
 
 function createDom(fiber) {
@@ -153,6 +161,7 @@ function createDom(fiber) {
             })
         }
     })
+    return node
 
     // console.log('=>node', node)
     //  container.append(node)
@@ -168,10 +177,33 @@ function workLoop(deadline) {
         nextUnitOfWork = performUnitOfWork(nextUnitOfWork)
         shouldYield = deadline.timeRemaining() < 1
     }
+    // console.log('=>11', nextUnitOfWork)
+    // console.log('=>22', wipRoot)
+    while (!nextUnitOfWork && wipRoot) {
+        commitRoot()
+    }
     requestIdleCallback(workLoop)
 }
 
 requestIdleCallback(workLoop)
+
+function commitRoot() {
+    console.log('=>wipRoot', wipRoot)
+    commitWork(wipRoot.child)
+    // commit完成 保存当前的fiber的树
+    currentRoot = wipRoot
+    wipRoot = null
+}
+
+function commitWork(fiber) {
+    if (!fiber) {
+        return
+    }
+    const domParent = fiber.parent.dom
+    domParent.appendChild(fiber.dom)
+    commitWork(fiber.child)
+    commitWork(fiber.sibling)
+}
 
 function performUnitOfWork(fiber) {
     console.log('=>performUnitOfWork-fiber', fiber)
@@ -180,9 +212,11 @@ function performUnitOfWork(fiber) {
     if (!fiber.dom) {
         fiber.dom = createDom(fiber)
     }
-    if (fiber.parent) {
-        fiber.parent.dom.append(fiber.dom)
-    }
+
+    // if (fiber.parent) {
+    //     fiber.parent.dom.appendChild(fiber.dom)
+    // }
+
     const elements = fiber.props.children
 
     let index = 0
