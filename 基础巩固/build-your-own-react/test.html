@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+</body>
+<script>
+
+    let obj1 = {
+        name: 'a',
+        age: 10,
+        habbit: 'ball',
+        address: 'ball'
+    }
+    let obj2 = {
+        name: 'b',
+        address: 'beijing',
+        address2: 'beijing',
+        address3: 'beijing',
+        habbit: 'bascketball'
+    }
+
+const isGone = (prev, next) => {
+    return key => {
+        return !(key in next)
+    }
+}
+
+const isNew = (prev, next) => key => prev[key] !== next[key]
+
+Object.keys(prevProps)
+    .filter(isProperty)
+    .filter(isGone(prevProps, nextProps))
+    .forEach(name => {
+      dom[name] = ""
+    })
+
+  // 添加或更新新属性
+  Object.keys(nextProps)
+    .filter(isProperty)
+    .filter(isNew(prevProps, nextProps))
+    .forEach(name => {
+      dom[name] = nextProps[name]
+    })
+
+
+
+// const res = Object.keys(obj1).filter(isGone(obj1, obj2)).forEach(sub => {
+//     obj1[sub] = ''
+// })
+// const res2 = Object.keys(obj2).filter(isNew(obj1, obj2))
+// console.log('=>', res)
+console.log('=>', res2)
+
+// console.log('=>', isGone(obj1, obj2)())
+
+</script>
+</html>

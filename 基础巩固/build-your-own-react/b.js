@@ -16,10 +16,15 @@
 //     React.createElement('b')
 // )
 
-const container = document.getElementById('root')
 let nextUnitOfWork = null
 let wipRoot = null
 let currentRoot = null
+let deletions = null
+const isProperty = key => key !== 'children'
+const isNew = (prev, next) => key => prev[key] !== next[key]
+const isGone = (prev, next) => key => !(key in next)
+
+const container = document.getElementById('root')
 const selfReact = {
     createElement,
     render,
@@ -43,7 +48,7 @@ const babelTransformJsx = selfReact.createElement(
     selfReact.createElement('a', null, 'bar', selfReact.createElement('h2', { title: '云之智', person: 99 }, 'Animal')),
     selfReact.createElement('b')
 )
-// console.log('=>babelTransformJsx', babelTransformJsx)
+console.log('=>babelTransformJsx', babelTransformJsx)
 /** babelTransformJsx
  * {
     "type": "div",
@@ -110,6 +115,7 @@ function createElement(type, props, ...children) {
                 if (typeof child === 'object') {
                     return child
                 } else {
+                    console.log('=>childchild', child)
                     return createTextElement(child)
                 }
             }),
@@ -137,7 +143,7 @@ function render(element, container) {
         // 初始为null， 之后的更新和上次commit完成保存的fiber树建立连接
         alternate: currentRoot,
     }
-
+    deletions = []
     nextUnitOfWork = wipRoot
 
     console.log('=>nextUnitOfWork', nextUnitOfWork)
@@ -189,6 +195,7 @@ requestIdleCallback(workLoop)
 
 function commitRoot() {
     console.log('=>wipRoot', wipRoot)
+    deletions.forEach(commitWork)
     commitWork(wipRoot.child)
     // commit完成 保存当前的fiber的树
     currentRoot = wipRoot
@@ -200,9 +207,29 @@ function commitWork(fiber) {
         return
     }
     const domParent = fiber.parent.dom
-    domParent.appendChild(fiber.dom)
+
+    if (fiber.effectTag === 'PLACEMENT' && fiber.dom !== null) {
+        domParent.appendChild(fiber.dom)
+    } else if (fiber.effectTag === 'DELETION') {
+        domParent.removeChild(fiber.dom)
+    } else if (fiber.effectTag === 'UPDATE' && fiber.dom !== null) {
+        updateDom(fiber, fiber.alternate.props, fiber.props)
+    }
+
     commitWork(fiber.child)
     commitWork(fiber.sibling)
+}
+
+function updateDom(fiber, prevProps, nextProps) {
+    console.log('=>updateDom-prevProps', prevProps)
+
+    // 找到新props中有而旧props中没有的
+    Object.keys(prevProps)
+        .filter(isProperty)
+        .filter(isGone(prevProps, nextProps))
+        .forEach(name => {
+            fiber[name] = ''
+        })
 }
 
 function performUnitOfWork(fiber) {
@@ -219,22 +246,74 @@ function performUnitOfWork(fiber) {
 
     const elements = fiber.props.children
 
+    reconcileChildren(fiber, elements)
+}
+
+function reconcileChildren(wipFiber, elements) {
     let index = 0
     let prevSibling = null
+    let oldFiber = wipFiber.alternate && wipFiber.alternate.child
 
-    while (index < elements.length) {
+    while (index < elements.length || !oldFiber) {
         const element = elements[index]
-        // console.log('=element>', element)
-        const newFiber = {
-            type: element.type,
-            props: element.props,
-            parent: fiber,
-            dom: null,
-            // dom: createDom(element),
+        console.log('=>elementelement', element)
+
+        let newFiber = null
+
+        const sameType = oldFiber && element && oldFiber.type === element.type
+        /* 
+            这里的比较规则如下：
+            如果旧的 fiber 元素 和新元素具有相同的类型，那么再进一步进行比较 他们的 属性
+            如果类型不同，并且有一个新元素，则需要创建一个新的DOM节点
+            如果类型不同，并且有一个旧 fiber 元素，则移除旧的节点
+            这里React也使用 key 进行比较。例如，它检测到子元素在元素数组中的位置发生了变化。
+        */
+        // 1 UPDATE
+        if (sameType) {
+            newFiber = {
+                type: element.type,
+                props: element.props,
+                dom: oldFiber.dom,
+                parent: wipFiber,
+                alternate: oldFiber,
+                effectTag: 'UPDATE',
+            }
         }
+
+        // 2 PLACEMENT
+        if (!sameType && element) {
+            newFiber = {
+                type: element.type,
+                props: element.props,
+                dom: null,
+                parent: wipFiber,
+                alternate: null,
+                effectTag: 'PLACEMENT',
+            }
+        }
+
+        // 3 DELETION
+        if (!sameType && oldFiber) {
+            oldFiber.effectTag = 'DELETION'
+            deletions.push(oldFiber)
+        }
+
+        // console.log('=element>', element)
+        // const newFiber = {
+        //     type: element.type,
+        //     props: element.props,
+        //     parent: fiber,
+        //     dom: null,
+        //     // dom: createDom(element),
+        // }
+
+        // 如果是第一个子元素，就把newFiber赋值给wipFiber的child
         if (index === 0) {
-            fiber.child = newFiber
-        } else {
+            wipFiber.child = newFiber
+        } else if (element) {
+            console.log('=>index', index)
+            console.log('=>prevSibling', prevSibling)
+            console.log('=>element', element)
             prevSibling.sibling = newFiber
         }
 
@@ -243,17 +322,17 @@ function performUnitOfWork(fiber) {
         index++
     }
     console.log('=>222', fiber)
-    if (fiber.child) {
-        return fiber.child
-    }
-    // console.log('=>prevSibling', prevSibling)
-    let nextFiber = fiber
-    while (nextFiber) {
-        if (nextFiber.sibling) {
-            return nextFiber.sibling
-        }
-        nextFiber = nextFiber.parent
-    }
+    // if (fiber.child) {
+    //     return fiber.child
+    // }
+    // // console.log('=>prevSibling', prevSibling)
+    // let nextFiber = fiber
+    // while (nextFiber) {
+    //     if (nextFiber.sibling) {
+    //         return nextFiber.sibling
+    //     }
+    //     nextFiber = nextFiber.parent
+    // }
 }
 
 /**4. Fiber 要做3件事
