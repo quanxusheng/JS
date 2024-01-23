@@ -20,8 +20,17 @@ let nextUnitOfWork = null
 let wipRoot = null
 let currentRoot = null
 let deletions = null
-const isProperty = key => key !== 'children'
+
+// 是否为事件属性
+const isEvent = key => key.startsWith('on')
+
+// 除了children和事件属性之外的属性
+const isProperty = key => key !== 'children' && !isEvent(key)
+
+// 是否为新增属性
 const isNew = (prev, next) => key => prev[key] !== next[key]
+
+// 是否要移除属性
 const isGone = (prev, next) => key => !(key in next)
 
 const container = document.getElementById('root')
@@ -195,6 +204,7 @@ requestIdleCallback(workLoop)
 
 function commitRoot() {
     console.log('=>wipRoot', wipRoot)
+    //  处理收集的需要删除的旧节点
     deletions.forEach(commitWork)
     commitWork(wipRoot.child)
     // commit完成 保存当前的fiber的树
@@ -210,25 +220,51 @@ function commitWork(fiber) {
 
     if (fiber.effectTag === 'PLACEMENT' && fiber.dom !== null) {
         domParent.appendChild(fiber.dom)
+    } else if (fiber.effectTag === 'UPDATE' && fiber.dom !== null) {
+        updateDom(fiber.dom, fiber.alternate.props, fiber.props)
     } else if (fiber.effectTag === 'DELETION') {
         domParent.removeChild(fiber.dom)
-    } else if (fiber.effectTag === 'UPDATE' && fiber.dom !== null) {
-        updateDom(fiber, fiber.alternate.props, fiber.props)
     }
 
     commitWork(fiber.child)
     commitWork(fiber.sibling)
 }
 
-function updateDom(fiber, prevProps, nextProps) {
+function updateDom(dom, prevProps, nextProps) {
     console.log('=>updateDom-prevProps', prevProps)
 
-    // 找到新props中有而旧props中没有的
+    // 移除旧事件
+    Object.keys(prevProps)
+        .filter(isEvent)
+        .filter(key => !(name in nextProps) || isNew(prevProps, nextProps)(key))
+        .forEach(name => {
+            const eventName = name.toLowerCase().substring(2)
+            dom.removeEventListener(eventName, prevProps[name])
+        })
+
+    // 移除旧属性 找到新props中有而旧props中没有的
     Object.keys(prevProps)
         .filter(isProperty)
         .filter(isGone(prevProps, nextProps))
         .forEach(name => {
-            fiber[name] = ''
+            dom[name] = ''
+        })
+
+    // 新增新属性
+    Object.keys(nextProps)
+        .filter(isProperty)
+        .filter(isNew(prevProps, nextProps))
+        .forEach(name => {
+            dom[name] = nextProps[name]
+        })
+
+    // 新增新事件
+    Object.keys(nextProps)
+        .filter(isEvent)
+        .filter(isNew(prevProps, nextProps))
+        .forEach(name => {
+            const eventName = name.toLowerCase().substring(2)
+            dom.addEventListener(eventName, nextProps[name])
         })
 }
 
