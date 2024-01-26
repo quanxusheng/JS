@@ -1,0 +1,19 @@
+{
+  "name": "first-pkg",
+  "version": "1.0.0",
+  "description": "",
+  "main": "/dist/index.js",
+  "scripts": {
+    "dev": "tsc --watch",
+    "build": "tsc --target es5"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bin": {
+    "shell": "./bin/shell.js"
+  },
+  "dependencies": {
+    "vue-fullscreenloading-fyy": "^1.0.0"
+  }
+}
