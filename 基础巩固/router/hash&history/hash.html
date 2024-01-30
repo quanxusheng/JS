@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>hash</title>
+</head>
+<style>
+    div{
+        width: 100px;
+        height: 800px;
+        border: 1px solid #000;
+    }
+</style>
+/**
+核心 onhashchange 来监听前进后退,hash值#的变化 
+ */
+<body>
+    <ul onclick='handleClick(event)'>
+            <li>div1</li>
+            <li>div2</li>
+            <li>div3</li>
+        </ul>
+    <div id='root'>
+        
+    </div>
+</body>
+<script>
+    
+
+    let root = document.getElementById('root')
+
+
+    function toDiv1() {
+        let vnode1 = {
+            type: 'div',
+            props: {
+                title: 'div1',
+                key: 1,
+                children: '我是div1'
+            }
+        }
+        let div1 = document.createElement(vnode1.type)
+        div1['title'] = vnode1.props.title
+        div1['key'] = vnode1.props.key
+        div1.innerHTML = vnode1.props.children
+        root.append(div1)
+    }
+    function toDiv2() {
+        let vnode1 = {
+            type: 'div',
+            props: {
+                title: 'div2',
+                key: 2,
+                children: '我是div2'
+            }
+        }
+        let div1 = document.createElement(vnode1.type)
+        div1['title'] = vnode1.props.title
+        div1['key'] = vnode1.props.key
+        div1.innerHTML = vnode1.props.children
+        root.append(div1)
+    }
+
+
+    window.onhashchange = (e) => {
+        console.log('=>', e)
+        console.log('=>root', root.childNodes)
+        root.innerHTML = ''
+        if (location.hash === '#div1') {
+            this.toDiv1()
+            
+        } else if (location.hash === '#div2') {
+            this.toDiv2()
+        }
+    }
+    window.onpopstate = e => {
+        console.log('=>onpopstate', e)
+    }
+
+    function handleClick(e) {
+        location.hash = '#' + e.target.innerHTML
+    }
+</script>
+</html>

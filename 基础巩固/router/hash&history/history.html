@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+/**
+核心 history.popState 监听url的变化 监听浏览器的前进后退 back forward go方法，pushState和replaceState不会被popState监听
+    pushState(params) 创建新的历史记录 params: {
+        state 一个保存相关数据的对象，在popState的回调函数中可以获取到这个对象,
+        '' 废弃
+        url 地址
+    }
+    replaceState(params) 替换当前的历史记录
+ */
+<style>
+    ul {
+        list-style-type: none;
+        width: 300px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+    }
+    li{
+        text-align: center;
+        border: 1px solid #000;
+        flex: 1;
+    }
+</style>
+<body>
+    <div>
+        <ul onclick='handleClick(event)'>
+            <li>red</li>
+            <li>green</li>
+            <li>blue</li>
+        </ul>
+    </div>
+    <a href="http://www.baidu.com">去百度</a>
+    <!-- <a href="./pages/red.html">去a</a> -->
+    <button onclick='history.back()'>back</button>
+    <button onclick='history.forward()'>forward</button>
+    <button onclick='history.go(1)'>go</button>
+    <div id='root'></div>
+</body>
+<script>
+
+    window.addEventListener('popstate', (e) => {
+        console.log('=>popstate', e)
+        if(!e.state) return
+        render(e.state)
+    })
+
+    // window.addEventListener('click', e => {
+    //     console.log('=>onclick', e.target.getAttribute('data-creature'))
+    //     console.log('=>onclick', e.target.getAttribute("data-creature"))
+    // })
+
+
+    function handleClick(e) {
+        const { innerHTML} = e.target
+        const query = {
+            name: innerHTML,
+            age: 19
+        }
+        // history.pushState({name: e.target.innerHTML}, '', `/基础巩固/router/pages/${e.target.innerHTML}.html`)
+        render(query)
+        if (innerHTML === 'blue') {
+            history.replaceState(query, '', innerHTML)
+        } else {
+            history.pushState(query, '', `${innerHTML}`)
+        }
+        console.log('=>history.state', history.state)
+        // history.pushState({}, '', 'lll')
+    }
+
+    function render(query) {
+        let container = document.getElementById('root')
+        container.innerHTML = query.name
+    }
+    history.replaceState({}, '', location.href)
+    history.length = 1
+</script>
+</html>
