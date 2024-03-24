@@ -1,69 +1,59 @@
-import React, { Component, useState } from 'react'
+import React, { useState, useMemo, useEffect, useLayoutEffect } from 'react'
 
-export default function Test1() {
-    requestIdleCallback((t) => {
-        console.log('=>ttt', t)
-        console.log('=>timeRemaining', t.timeRemaining())
-    })
+// 父组件
+const Example = () => {
+    const [time, setTime] = useState<number>(0)
+    const [random, setRandom] = useState<number>(0)
 
-    return <ul>
-        {/* {Array(7000).fill(0).map((_, i) => <li key={i}>{i}</li>)} */}
-    </ul>
+    let time2 = null
+    useLayoutEffect(() => {
+        time2 = time + Math.random()
+        console.log('=>time2', time2)
+    }, [time])
+
+
+    // useMemo(() => {
+    //     console.log('=time>', time)
+    //     console.log('=>', 'excuted')
+    //     time2 = random + Math.random()
+    // }, [random])
+    return (
+        <div>
+            <button onClick={() => setTime(new Date().getTime())}>获取当前时间</button>
+            <button onClick={() => setRandom(Math.random())}>获取当前随机数</button>
+            <p>time2: {time2}</p>
+            <Show time={time}>{random}</Show>
+        </div>
+    )
 }
 
+type Data = {
+    time: number
+}
 
+// 子组件
+const Show: React.FC<Data> = ({ time, children }) => {
 
-// function Sub() {
-//     console.log('=>', 'sub')
-//     return (
-//         <div>sub</div>
-//     )
-// }
+    const newTime = useMemo(() => {
+        console.log('changeTime excuted...')
+        return new Date(time).toISOString()
+    }, [time])
 
-// export default function Test1() {
-//     console.log('=>', 'test1')
-//     const [count, setCount] = useState(0)
-//     const changeCount = () => {
-//         console.log('=>', '点击了')
-//         setCount(10)
-//     }
-//     return (
-//         <ul>
-//             {/* {Array(3000).fill(0).map((_, i) => <li>{i}</li>)} */}
-//             <div onClick={changeCount}>Test1{count}</div>
-//             <Sub />
-//         </ul>
-//     )
-//     // return React.createElement('h1', null, [111, React.createElement('p', null, 'child')])
-// }
+    // let newTime = null
+    // useEffect(() => {
+    //     console.log('changeTime excuted...')
+    //     newTime = new Date(time).toISOString()
+    //     console.log('=newTime>', newTime)
+    // }, [time])
 
+    return (
+        <div>
+            <p>Time is: {newTime}</p>
+            <p>time: {time}</p>
+            <p>newTime: {newTime}</p>
+            <p>Random is: {children}</p>
+        </div>
+    )
+}
 
-
-
-// class Sub extends Component {
-
-//     render() {
-//         console.log('=>sub', 'sub')
-//         return (
-//             <div>sub</div>
-//         )
-//     }
-// }
-// export default class Text1 extends Component {
-//     state = { count: 0 }
-//     changeCount = () => {
-//         console.log('=>', '点击了')
-//         this.setState({
-//             count: 10
-//         })
-//     }
-//     render() {
-//         console.log('=>sub', 'Text1')
-
-//         return (
-//             <div onClick={this.changeCount}>Class-text{this.state.count}
-//                 <Sub />
-//             </div>
-//         )
-//     }
-// }
+export default Example

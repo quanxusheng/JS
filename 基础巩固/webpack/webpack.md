@@ -13,7 +13,8 @@ babel是js的编译器 源码 -> 源码
 @babel/core 
 @babel/parser  将源代码字符串转成ast抽象语法树
 @babel/traverse 递归遍历ast树查找模块的依赖关系，对模块代码分析
-@babel/generator 将ast转化为代码
+@babel/generator 将ast转化为代码 为什么需要用generator再把ast转为代码，而不是直接用源代码？
+ - 因为在traverse找到模块的依赖关系之后，需要将模块的ast语法树中对依赖的引用路径进行重写为模块的id 比如：require('./name') 改写为 require('./src/name')
 
 打包后的文件 
 一个立即执行函数
@@ -51,3 +52,7 @@ babel是js的编译器 源码 -> 源码
     ]
   }
 
+  
+
+复习
+2024-02-22

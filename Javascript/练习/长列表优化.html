@@ -1,35 +1,35 @@
 <ul id="container"></ul>
 <script>
-  let total = 100000;
-  var con = document.getElementById("container")
-  let timer = Date.now();
-  //新版本浏览器，当存在循环的时候会统计
-  /* for (let i = 0; i < total; i++) {
-    let li = document.createElement("li");
-    li.innerHTML = i;
-    container.appendChild(li)
-  }
-  setTimeout(() => {
-    //此时是渲染时间
-    console.log(Date.now() - timer)//3884
-  }) */
+//   let total = 100000;
+//   var con = document.getElementById("container")
+//   let timer = Date.now();
+//   //新版本浏览器，当存在循环的时候会统计
+//   for (let i = 0; i < total; i++) {
+//     let li = document.createElement("li");
+//     li.innerHTML = i;
+//     container.appendChild(li)
+//   }
+//   setTimeout(() => {
+//     //此时是渲染时间
+//     console.log(Date.now() - timer)//3884
+//   })
 
-  let num = 0
-  function load() {
-    num += 50
-    if (num <= total) {
-      requestAnimationFrame(() => {
-        let fragement
-        for (let i = 0; i < 50; i++) {
-          fragement = document.createDocumentFragment()
-          let li = document.createElement('li')
-          li.innerHTML = num
-          fragement.appendChild(li)
-        }
-        load()
-        con.appendChild(fragement)
-      })
-    }
-  }
-  load()
+//   let num = 0
+//   function load() {
+//     num += 50
+//     if (num <= total) {
+//       requestAnimationFrame(() => {
+//         let fragement
+//         for (let i = 0; i < 50; i++) {
+//           fragement = document.createDocumentFragment()
+//           let li = document.createElement('li')
+//           li.innerHTML = num
+//           fragement.appendChild(li)
+//         }
+//         load()
+//         con.appendChild(fragement)
+//       })
+//     }
+//   }
+//   load()
 </script>

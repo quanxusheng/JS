@@ -5,20 +5,16 @@
             "./src/name.js": (module) => {
               const name = 'alex';
 module.exports = name;
-aaaloader1的注视;
-            }
-          ,
-            "./src/sub.js": (module) => {
-              module.exports = 'aaa';
-aaaloader1的注视;
+经过了loader2的处理loader1的注释;
             }
           ,
             "./src/age.js": (module) => {
-              const sub = require("./src/sub.js");
+              // const sub = require('./sub')
 // import sub1 from './sub'
 const age = 99;
+// console.log('=>', sub)
 module.exports = age;
-aaaloader1的注视;
+经过了loader2的处理loader1的注释;
             }
           ,
             "./src/index.js": (module) => {
@@ -26,7 +22,7 @@ aaaloader1的注视;
 const age = require("./src/age.js");
 console.log('=>age', age);
 console.log('=>name', name);
-aaaloader1的注视;
+经过了loader2的处理loader1的注释;
             }
             
         };
@@ -47,6 +43,6 @@ aaaloader1的注视;
 const age = require("./src/age.js");
 console.log('=>age', age);
 console.log('=>name', name);
-aaaloader1的注视;
+经过了loader2的处理loader1的注释;
       })();
  

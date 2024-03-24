@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+</body>
+<script>
+
+    let bucket = new WeakMap()
+    let activeEffect = null
+    let effectStack = []
+
+    let initData = {
+        name: 'alex',
+        age: 1,
+        money: 100,
+        go: true
+    }
+    let data = new Proxy(initData, {
+        get(target, key) {
+            // console.log('=>get-target', target)
+            // console.log('=>get-key', key)
+            // console.log('=>activeEffect', activeEffect)
+
+            track(target, key)
+            
+            return Reflect.get(target, key)
+        },
+        set(target, key, newValue) {
+            if (target[key] === newValue) return
+            Reflect.set(target, key, newValue)
+            // console.log('=>set-target', target)
+            // console.log('=>set-key', key)
+            // console.log('=>set-newValue', newValue)
+            
+            trigger(target, key)
+
+            return true
+        }
+    })
+
+    function track(target, key) {
+        // console.log('=>track', key)
+        if (!activeEffect) return
+        let targetMap = bucket.get(target)
+
+        if (!targetMap) {
+            bucket.set(target, targetMap = new Map())
+        }
+
+        let effects = targetMap.get(key)
+
+        if (!effects) {
+            targetMap.set(key, effects = new Set())
+        }
+        activeEffect.deps.push(effects)
+        effects.add(activeEffect)
+    }
+    function trigger(target, key) {
+        // console.log('=>trigger', key)
+        let targetMap = bucket.get(target)
+            if (!targetMap) return
+            let effects = targetMap.get(key)
+            if (!effects) return
+            // let effectsToRun = new Set(effects)
+            let effectsToRun = new Set()
+            effects && effects.forEach(eff => {
+                if (eff !== activeEffect) {
+                    effectsToRun.add(eff)
+                }
+            })
+            effectsToRun.forEach(eff => {
+                // console.log('=>eff.options', eff.options)
+                if (eff.options?.scheduler) {
+                    eff.options.scheduler(eff)
+                } else {
+                    eff()
+                }
+            })
+    }
+    
+
+    // function speak() {
+    //     let k = data.go ? data.name : 'back'
+    //     console.log('=>speak-kkk', k)
+    // }
+    // speak()
+
+    function effect(fn, options) {
+
+        const effectFn = () => {
+            clearUp(effectFn)
+            effectStack.push(effectFn)
+            activeEffect = effectFn
+            const res = fn()
+            // console.log('=>res', res)
+            effectStack.pop()
+            activeEffect = effectStack[effectStack.length - 1]
+            return res
+             
+        }
+        effectFn.options = options
+        effectFn.deps = []
+
+        if (!options?.lazy) {
+            effectFn()
+        }
+
+        return effectFn
+    }
+
+    function clearUp(effectFn) {
+        for(let i = 0; i < effectFn.deps.length; i++) {
+            let deps = effectFn.deps[i]
+            deps.delete(effectFn)
+        }
+        effectFn.deps.length = 0
+    }
+
+    // effect(speak)
+
+    // data.name = 'quan'
+    // data.age = 19 
+//    data.go = false
+//     setTimeout(() => {
+//         data.name = 'quan'
+//         // data.hobby = 'code'
+//         console.log('=>bucket22', bucket)
+//     }, 2000)
+
+
+    // 嵌套
+    /* effect(function fn1() {
+        effect(function fn2() {
+            console.log('=>fn2执行了', data.name )
+            // data.name = '青云'
+        })
+        // data.age = 888
+        console.log('=>fn1执行了', data.age)
+    })
+
+    // data.age = 10000
+    data.name = 'quan' */
+
+    // 避免无限递归
+    /* effect(() => {
+        data.age++
+        console.log('=>age', data.age)
+    })
+    data.age += 99 */
+
+
+    // 调度执行
+
+    /* let jobQueue = new Set()
+    let res = Promise.resolve()
+    let queueFlag = true
+    effect(() => {
+        // console.log('=>', '2 打印了')
+        console.log('=>', data.age)
+    }, {
+        scheduler(effectFn) {
+            console.log('=>', '进来了')
+            jobQueue.add(effectFn)
+            flushJob()
+            // setTimeout(() => {
+            //     effectFn()
+            // }, 2000)
+            // setTimeout(effectFn)
+            // effectFn()
+        }
+    })
+    function flushJob() {
+        console.log('=>', 'flush')
+        if (!queueFlag) return
+        queueFlag = false
+        
+        res.then(() => {
+            jobQueue.forEach(j => j())
+        }).finally(() => {
+            console.log('=>', '结束了')
+            queueFlag = true
+        })
+    } */
+
+    // console.log('=>', '结束了')
+    // data.age++
+    // data.age++
+
+
+    /* computed */
+    /* function computed(eff) {
+        let val, dirty = true
+        let effectFn = effect(
+            eff,
+            {
+                lazy: true,
+                scheduler(effectFn) {
+                    dirty = true
+                    trigger(obj, 'value')
+                }
+            }
+        )
+        
+        let obj = {
+            get value() {
+                if (dirty) {
+                    dirty = false
+                    val = effectFn()
+                   
+                }
+                 track(obj, 'value')
+                 return val
+            }
+        }
+
+        return obj
+    }
+    let tempData = computed(() => {
+        console.log('=>', '执行了')
+        return data.money  + data.age
+    })
+
+    effect(function fn() {
+        console.log('=>vvvv', tempData.value)
+    })
+    data.age = 99
+    // data.age = 90
+    // console.log('=>tempData', tempData.value)
+    // // console.log('=>tempData', tempData.value)
+    // // console.log('=>tempData', tempData.value)
+    // // data.age++
+    // data.money = 999
+    
+    // console.log('=>tempData', tempData.value)
+    // data.age = 90
+    // console.log('=>tempData', tempData.value)
+
+    // data.name = 'moon' */
+
+    /* watch */
+
+    watch(data, (n, o) => {
+        console.log('=>', '变动了')
+    })
+
+    function watch(source, eff) {
+        effect(
+            // () => data.age,
+            () => traverse(source),
+            {
+                scheduler(effectFn) {
+                    eff()
+                }
+            }
+        )
+    }
+    function traverse(data, seen = new Set()) {
+        if (typeof data != 'object' || data === null || seen.has(data)) {
+            return data
+        }
+        seen.add(data)
+        for(let k in data) {
+            // console.log('=>kkk', k)
+            traverse(data[k], seen)
+        }
+        // console.log('=>dddd', data)
+        return data
+    }
+    data.age = 99
+    // console.log('=>', data.age)
+data.name = 'kkk'
+    console.log('=>bucket', bucket)
+
+</script>
+</html>

@@ -15,7 +15,7 @@
     const obj = {
         name: 'zhao',
         name2: 'zhaozhao',
-        age: 18,
+        age: 1,
         hobby: 'read',
         color: 'blue',
         ok: true,
@@ -51,13 +51,13 @@
     }
     function trigger(target, key) {
         let depsMap = bucket.get(target)
-        console.log('=depsMap>', depsMap)
+        // console.log('=depsMap>', depsMap)
         if (!depsMap) return
         let deps = depsMap.get(key)
         if (!deps) return
         // let effectRun = new Set(deps) // 解决cleanup造成死循环
         let effectRun = new Set()
-        console.log('=deps>', deps)
+        // console.log('=deps>', deps)
         deps.forEach(dep => {
             if (dep !== activeEffect) {
                 effectRun.add(dep)
@@ -130,7 +130,17 @@
         }
         return effectFn
     }
-    watch(
+
+    effect(() => {
+        console.log('=>data.age', data.age)
+    }, {
+        scheduler(effectFn) {
+            setTimeout(effectFn)
+        }
+    })
+    console.log('=>', '结束了')
+    data.age++
+    /* watch(
         // 参数如果是对象, 那么newVal, oldVal值是同一个，指向同一个引用地址
         () => data.name,
         // () => data.name + data.age,
@@ -149,7 +159,7 @@
         {
             immediate: true
         }
-    )
+    ) */
 
 
     function watch(source, callback, opts) {
@@ -194,16 +204,16 @@
         }
         oldVal = effectFn()
     }
-    setTimeout(() => {
-        data.name = 'qing yun'
-    }, 5000)
-    setTimeout(() => {
-        data.age = 99
-    }, 2000)
-    setTimeout(() => {
-        data.name = 'iiiiii'
-    }, 2000)
-    console.log('=bucket>', bucket)
+    // setTimeout(() => {
+    //     data.name = 'qing yun'
+    // }, 5000)
+    // setTimeout(() => {
+    //     data.age = 99
+    // }, 2000)
+    // setTimeout(() => {
+    //     data.name = 'iiiiii'
+    // }, 2000)
+    // console.log('=bucket>', bucket)
 </script>
 
 </html>

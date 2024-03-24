@@ -1,0 +1,12 @@
+{
+  "name": "demo",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "webpack --mode development"
+  },
+  "dependencies": {
+    "loadsh": "^0.0.4"
+  }
+}

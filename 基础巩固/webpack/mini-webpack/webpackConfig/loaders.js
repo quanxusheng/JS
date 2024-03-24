@@ -1,8 +1,8 @@
 const loader1 = source => {
-    return (source += 'loader1的注视')
+    return (source += 'loader1的注释')
 }
 const loader2 = source => {
-    return (source += 'aaa')
+    return (source += '经过了loader2的处理')
 }
 
 module.exports = {

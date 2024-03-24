@@ -1,7 +1,7 @@
 class WebpackRunPlugin {
     apply(compiler) {
         compiler.hooks.run.tap('webpackRunPlugin', () => {
-            console.log('=>', '开始编译')
+            // console.log('=>', '开始编译')
             return
         })
     }

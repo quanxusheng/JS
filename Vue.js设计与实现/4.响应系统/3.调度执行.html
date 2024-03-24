@@ -119,19 +119,22 @@
       isFlushSta = false
     })
   }
-
+  
+  console.log('=>', 1)
   effect(() => {
     console.log('=>111', obj.age)
   }, {
     scheduler(fn) {
-      jobsQueue.add(fn)
-      flushJob()
+    //   jobsQueue.add(fn)
+    //   flushJob()
+
       // console.log('=>fn', fn)
-      // setTimeout(fn)
-      // obj.age++
-      // obj.age++
+      setTimeout(fn)
     }
   })
+  obj.age++
+      obj.age++
+  console.log('=>', 2)
 
 
 </script>

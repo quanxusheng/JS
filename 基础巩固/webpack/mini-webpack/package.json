@@ -3,11 +3,15 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "scripts": {
+    "dev": "nodemon debugger.js"
+  },
   "dependencies": {
     "@babel/generator": "^7.22.9",
     "@babel/parser": "^7.22.7",
     "@babel/traverse": "^7.22.8",
     "@babel/types": "^7.22.5",
+    "nodemon": "^3.1.0",
     "tapable": "^2.2.1",
     "webpack": "^5.88.2"
   }

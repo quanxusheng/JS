@@ -138,7 +138,7 @@ class Compilation {
             this.fileDependencies.push(entryFilePath)
             // 6.2 得到入口模块的 module 对象， 里面存放着该模块的路径，依赖模块，源代码等
             let entryModule = this.buildModule(entryName, entryFilePath)
-
+            // console.log('=>entryModule', entryModule)
             this.modules.push(entryModule)
             // console.log('=>this.modules', this.modules)
 
@@ -150,11 +150,11 @@ class Compilation {
             }
             this.chunks.push(chunk)
         }
-
+        // console.log('=>this.chunks', this.chunks)
         // 9 把各个代码块 chunk 转换成一个一个文件加入到输出列表
         this.chunks.forEach(chunk => {
             let filename = this.webpackOptions.output.filename.replace('[name]', chunk.name)
-            console.log('=>filename', filename)
+            // console.log('=>filename', filename)
             this.assets[filename] = getSource(chunk)
         })
 
@@ -164,6 +164,8 @@ class Compilation {
         // console.log('=>this.chunks', this.chunks[0].modules)
         // console.log('=>this.modules', this.modules)
         // console.log('=>this.chunks', this.chunks)
+        console.log('=>this.fileDependencies', this.fileDependencies)
+        // console.log('=>assets', this.assets)
         callback(
             null,
             {
@@ -207,7 +209,7 @@ class Compilation {
         }, sourceCode)
 
         // console.log('=>', moduleId, module, sourceCode)
-
+        // console.log('=>sourceCode', sourceCode)
         // 第七步： 找出此模块所依赖的模块，再对依赖模块进行编译
         let ast = parser.parse(sourceCode, { sourceType: 'module' })
         // console.log('=>ast', ast)
@@ -218,6 +220,8 @@ class Compilation {
                 // console.log('=>', node.callee)
                 if (node.callee.name === 'require') {
                     let depModuleName = node.arguments[0].value // 获取依赖的模块
+                    // console.log('=>node.arguments', node.arguments)
+                    // console.log('=>depModuleName', depModuleName)
                     let dirname = path.posix.dirname(modulePath) // 获取当前正在编译模块所在目录
                     // console.log('=>depModuleName', depModuleName)
                     let depModulePath = path.posix.join(dirname, depModuleName) // 获取依赖模块的绝对路径
@@ -227,19 +231,26 @@ class Compilation {
                     depModulePath = tryExtensions(depModulePath, extensions) // 尝试添加后缀，找到一个真实在硬盘存在的文件
                     // 7.3 将依赖模块的绝对路径 push 到 this.fileDependencies 中
                     this.fileDependencies.push(depModulePath)
+                    // console.log('=>this.fileDependencies', this.fileDependencies)
                     // 7.4 生成依赖模块的模块id
                     let depModuleId = './' + path.posix.relative(baseDir, depModulePath)
                     // 7.5 修改语法结构，把 依赖的模块 改为 依赖模块id require('./name') => require('./src/name.js')
+                    // console.log('=>baseDir', baseDir)
+                    // console.log('=>depModulePath', depModulePath)
+                    // console.log('=>depModuleId', depModuleId)
+                    // console.log('=>types.stringLiteral(depModuleId)', types.stringLiteral(depModuleId))
                     node.arguments = [types.stringLiteral(depModuleId)]
                     // console.log('=>node.arguments', node.arguments)
                     // 7.6 将依赖模块的信息push到该模块的 dependencies 属性中
                     module.dependencies.push({ depModuleId, depModulePath })
                     // console.log('=>module', module)
+                    // console.log('=>module', module.dependencies)
                 }
             },
         })
 
         // 7.7 生成新代码，并把转译后的代码放到 module._source 属性上
+        // console.log('=>ast', ast)
         let { code } = generator(ast)
         // console.log('=>code', code)
         module._source = code

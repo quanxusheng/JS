@@ -8,6 +8,7 @@ module.exports = {
         // console.log('=>config', config)
         // console.log('=>compiler', compiler)
         const plugins = config.plugins
+        console.log('=>', 'plugins开始执行')
         for (let v of plugins) {
             v.apply(compiler)
         }

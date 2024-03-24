@@ -5,8 +5,10 @@ const webpackConfig = require('./webpack.config')
 // 1.0
 const compiler = webpack(webpackConfig)
 // console.log('=>compiler11', compiler)
-
+// console.log('=>process', process)
+// console.log('=>process', process.envs)
 compiler.run((err, stats) => {
+    // console.log('=>cccccrrrr')
     // console.log('=>', err)
     // console.log(
     //     '=>',

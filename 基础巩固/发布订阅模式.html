@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div>
+        <ul class='music-list'>
+        </ul>
+
+        <button class='btn-paly'>播放</button>
+        <button class='btn-pause'>暂停</button>
+    </div>
+</body>
+<script>
+
+
+
+
+class EventBus {
+    events = {}
+
+    on(eventName, fn) {
+        // console.log('=>events', this.events)
+        if (Reflect.has(this.events, eventName)) {
+            this.events[eventName].push(fn)
+        } else {
+            this.events[eventName] = []
+            this.events[eventName].push(fn)
+        }
+    }
+    emit(eventName) {
+        this.events[eventName].forEach(fn => {
+            // console.log('=>', fn)
+            fn()
+        })
+    }
+    once(eventName, fn) {
+        const cb = () => {
+            fn()
+            this.off(eventName, cb)
+        }
+        this.on(eventName, cb)
+    }
+
+    off(eventName, fn) {
+        
+        const fns = this.events[eventName] || []
+        fns.splice(fns.indexOf(fn), 1)
+    }
+}
+
+
+let bus = new EventBus()
+
+const listener = () => {
+    console.log('=>user', '新书来啦')
+}
+const listener2 = () => {
+    console.log('=>user2', '新书来了')
+}
+
+const listener3 = () => {
+    console.log('=>user3', '新玩具来了')
+}
+
+bus.once('newToy', listener3)
+// bus.once('newToy', listener2)
+bus.emit('newToy')
+// bus.emit('newToy')
+// bus.emit('newToy')
+
+bus.on('newBook', listener)
+
+// bus.off('newBook', listener)
+
+bus.on('newBook', listener2)
+bus.off('newBook', listener)
+// bus.on('newPen', () => {
+//     console.log('=>', '新笔来啦')
+// })
+
+// bus.once('newToy', listener3)
+
+// bus.emit('newBook')
+
+// // bus.emit('newToy')
+
+bus.emit('newBook')
+// bus.emit('newPen')
+
+console.log('=>', bus)
+
+
+// document.addEventListener('click', () => {
+//     console.log('=>', '111')
+// })
+// document.addEventListener('mousemove', () => {
+//     console.log('=>', '222')
+// })
+
+
+
+</script>
+<style>
+    ul li{
+        list-style-type: none;
+    }
+</style>
+</html>

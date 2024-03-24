@@ -26,14 +26,15 @@
     container.onmousemove = debounce(getUserAction)
 
     function debounce(func, wait = 1000) {
-      var timeout
-      var ind = 0
-      return function () {
+      var timeout = null
+      
+    return function () {
         clearTimeout(timeout)
         timeout = setTimeout(() => {
-          func.apply(this, ...arguments)
-        }, wait)
-      }
+            console.log('=>arguments', arguments)
+        func.apply(this, ...arguments)
+    }, wait)
+    }
     }
   </script>
 </body>
