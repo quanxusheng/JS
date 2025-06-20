@@ -1,4 +1,4 @@
-import { updateQueue } from "./Component";
+import { updateQueue } from './Component'
 
 /**
  * 实现合成事件或者事件委托
@@ -7,18 +7,19 @@ import { updateQueue } from "./Component";
  * @param {*} eventHandler 事件的处理函数
  */
 function addEvent(dom, eventType, eventHandler) {
-    let store;
-    if (dom._store) { // _store是给原生DOM对象上添加的自定义属性
-        store = dom._store;
+    let store
+    if (dom._store) {
+        // _store是给原生DOM对象上添加的自定义属性
+        store = dom._store
     } else {
         dom._store = {}
-        store = dom._store;
+        store = dom._store
     }
     // store.onclick=handleClick
-    store[eventType] = eventHandler;
+    store[eventType] = eventHandler
     // document.onclick=dispatchEvent
     if (!document[eventType]) {
-        document[eventType] = dispatchEvent;
+        document[eventType] = dispatchEvent
     }
 }
 
@@ -29,41 +30,41 @@ function addEvent(dom, eventType, eventHandler) {
  */
 function dispatchEvent(event) {
     // target = button type = click
-    let { target, type } = event;
-    let eventType = 'on' + type;
+    let { target, type } = event
+    let eventType = 'on' + type
     // 先把批量更新 全局变量设置为true；
-    updateQueue.isBatchingUpdate = true;
+    updateQueue.isBatchingUpdate = true
     // 先创建一个合成事件
-    let syntheticEvent = createSyntheticEvent(event);
-    let currentTarget = target;
+    let syntheticEvent = createSyntheticEvent(event)
+    let currentTarget = target
     // 是在模拟向上冒泡的过程
     while (currentTarget) {
         // 获取事件源DOM对象上的store属性
-        let { _store } = currentTarget;
-        let eventHandler = _store && _store[eventType]; // handleClick
+        let { _store } = currentTarget
+        let eventHandler = _store && _store[eventType] // handleClick
         if (eventHandler) {
-            syntheticEvent.target = target; // button
-            syntheticEvent.currentTarget = currentTarget;
-            eventHandler && eventHandler.call(target, syntheticEvent); // handleClick(syntheticEvent)
+            syntheticEvent.target = target // button
+            syntheticEvent.currentTarget = currentTarget
+            eventHandler && eventHandler.call(target, syntheticEvent) // handleClick(syntheticEvent)
         }
-        currentTarget = currentTarget.parentNode;
+        currentTarget = currentTarget.parentNode
     }
 
-    updateQueue.isBatchingUpdate = false;
-    updateQueue.batchUpdate(); // 进行真正的更新
+    updateQueue.isBatchingUpdate = false
+    updateQueue.batchUpdate() // 进行真正的更新
 }
 
 function createSyntheticEvent(nativeEvent) {
-    let syntheticEvent = { nativeEvent };
+    let syntheticEvent = { nativeEvent }
     for (let key in nativeEvent) {
-        syntheticEvent[key] = nativeEvent[key];
+        syntheticEvent[key] = nativeEvent[key]
     }
     // 此处会有一些兼容性处理
-    return syntheticEvent;
+    return syntheticEvent
 }
 
 const Event = {
-    addEvent
+    addEvent,
 }
 
-export default Event;
+export default Event

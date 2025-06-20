@@ -1,3 +1,2 @@
-let now = Date.now
-console.log('=>1', now)
-console.log('=>2', now)
+var module = require('./a')
+console.log('=>222', module)
